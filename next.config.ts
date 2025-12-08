@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' blob: data:",
               "media-src 'self' blob:",
-              "connect-src 'self' https://cdn.jsdelivr.net https://huggingface.co https://*.hf.space blob:",
+              "connect-src 'self' https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co https://*.hf.space blob:",
               "worker-src 'self' blob: https://cdn.jsdelivr.net",
             ].join('; ')
           },

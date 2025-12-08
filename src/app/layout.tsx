@@ -16,7 +16,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "InternetScribe - Free Offline Audio Transcription",
-  description: "Transcribe audio to text for free, privately in your browser. No uploads, no servers. Powered by OpenAI Whisper AI. Supports MP3, WAV, M4A. Export to TXT, JSON, VTT subtitles.",
+  description: "Transcribe audio to text for free, privately in your browser. No uploads, no servers. Powered by Moonshine AI. Supports MP3, WAV, M4A. Export to TXT, JSON, VTT subtitles.",
   keywords: ["audio transcription", "speech to text", "whisper ai", "offline transcription", "free transcription", "audio to text", "voice to text", "transcribe audio"],
   authors: [{ name: "InternetScribe" }],
   manifest: "/manifest.json",
@@ -104,7 +104,7 @@ export default function RootLayout({
                       "name": "How accurate is the transcription?",
                       "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "We use OpenAI's Whisper model, known for high accuracy. You can choose between different model sizes to balance speed and accuracy."
+                        "text": "We use Moonshine AI, optimized for real-time transcription. You can choose between Tiny for maximum speed or Base for best accuracy."
                       }
                     }
                   ]

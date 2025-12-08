@@ -225,7 +225,7 @@ export default function TranscriptionView({
                                 </div>
                                 <p className="text-sm text-muted-foreground">
                                     {isModelLoading 
-                                        ? 'This happens once. Downloading Whisper model...' 
+                                        ? 'This happens once. Downloading Moonshine model...' 
                                         : estimatedTime 
                                             ? `Processing your audio locally... (~${Math.ceil(estimatedTime / 60)} min)` 
                                             : 'Processing your audio locally...'}

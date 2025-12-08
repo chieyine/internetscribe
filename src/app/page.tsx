@@ -215,7 +215,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="font-semibold text-lg">Fast & Free</h3>
-              <p className="text-sm text-muted-foreground">Powered by OpenAI&apos;s Whisper model. No sign-up required. Completely free to use.</p>
+              <p className="text-sm text-muted-foreground">Powered by Moonshine AI. No sign-up required. Completely free to use.</p>
             </div>
             <div className="space-y-3 p-6 rounded-xl bg-muted/30">
               <div className="w-10 h-10 rounded-lg bg-foreground/10 flex items-center justify-center">
@@ -244,7 +244,7 @@ export default function Home() {
               </div>
               <div className="space-y-2">
                 <h3 className="font-semibold">How accurate is the transcription?</h3>
-                <p className="text-muted-foreground">We use OpenAI&apos;s Whisper model, known for high accuracy. Choose the Small model for best accuracy or Tiny for faster results.</p>
+                <p className="text-muted-foreground">We use Moonshine, the fastest open-source speech recognition model. Real-time transcription directly in your browser.</p>
               </div>
               <div className="space-y-2">
                 <h3 className="font-semibold">Is my audio data secure?</h3>

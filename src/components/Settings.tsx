@@ -31,10 +31,8 @@ const LANGUAGES = [
 ];
 
 const MODELS = [
-    { id: 'onnx-community/moonshine-tiny-ONNX', name: 'Moonshine Tiny', size: '~15MB', quality: 3, speed: 'Ultra Fast', desc: 'Real-time, 50x faster than large models', downloadTime: '~5 sec' },
-    { id: 'onnx-community/moonshine-base-ONNX', name: 'Moonshine Base', size: '~60MB', quality: 4, speed: 'Super Fast', desc: 'Great balance of speed and accuracy', downloadTime: '~20 sec' },
-    { id: 'Xenova/whisper-small', name: 'Whisper Small', size: '~250MB', quality: 4, speed: 'Fast', desc: 'Fallback if Moonshine fails', downloadTime: '~1 min' },
-    { id: 'distil-whisper/distil-large-v3', name: 'Distil Large', size: '~750MB', quality: 5, speed: 'Moderate', desc: 'Best quality, multilingual', downloadTime: '~3 min' },
+    { id: 'onnx-community/moonshine-tiny-ONNX', name: 'Moonshine Tiny', size: '~15MB', quality: 3, speed: 'Ultra Fast', desc: 'Real-time transcription', downloadTime: '~5 sec' },
+    { id: 'onnx-community/moonshine-base-ONNX', name: 'Moonshine Base', size: '~60MB', quality: 4, speed: 'Super Fast', desc: 'Best accuracy', downloadTime: '~20 sec' },
 ];
 
 function QualityStars({ count }: { count: number }) {
@@ -176,20 +174,16 @@ export default function Settings({
                 <div className="border-t border-border pt-4">
                     <div className="flex items-center gap-2 text-sm font-medium mb-3">
                         <Info className="w-4 h-4" />
-                        Model Guide
+                        Moonshine Models
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                    <div className="grid grid-cols-2 gap-2 text-xs">
                         <div className="bg-green-500/10 rounded-lg p-2 border border-green-500/20">
-                            <div className="font-medium text-green-600 dark:text-green-400">⚡ Max Speed</div>
-                            <div className="text-muted-foreground">Moonshine Tiny</div>
+                            <div className="font-medium text-green-600 dark:text-green-400">⚡ Tiny</div>
+                            <div className="text-muted-foreground">15MB, real-time</div>
                         </div>
                         <div className="bg-muted/30 rounded-lg p-2">
-                            <div className="font-medium">Balanced</div>
-                            <div className="text-muted-foreground">Moonshine Base</div>
-                        </div>
-                        <div className="bg-muted/30 rounded-lg p-2">
-                            <div className="font-medium">Best Quality</div>
-                            <div className="text-muted-foreground">Distil Large</div>
+                            <div className="font-medium">Base</div>
+                            <div className="text-muted-foreground">60MB, best quality</div>
                         </div>
                     </div>
                 </div>

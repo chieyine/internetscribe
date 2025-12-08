@@ -31,9 +31,10 @@ const LANGUAGES = [
 ];
 
 const MODELS = [
-    { id: 'distil-whisper/distil-small.en', name: 'Distil Small', size: '~170MB', quality: 4, speed: 'Very Fast', desc: 'English only, 8x faster than Large', downloadTime: '~1 min' },
-    { id: 'distil-whisper/distil-medium.en', name: 'Distil Medium', size: '~400MB', quality: 4, speed: 'Fast', desc: 'English only, 6x faster than Large', downloadTime: '~2 min' },
-    { id: 'distil-whisper/distil-large-v3', name: 'Distil Large V3', size: '~750MB', quality: 5, speed: 'Fast', desc: 'Multilingual, 5x faster, 99% accuracy', downloadTime: '~3 min' },
+    { id: 'onnx-community/moonshine-tiny-ONNX', name: 'Moonshine Tiny', size: '~15MB', quality: 3, speed: 'Ultra Fast', desc: 'Real-time, 50x faster than Whisper Large', downloadTime: '~5 sec' },
+    { id: 'onnx-community/moonshine-base-ONNX', name: 'Moonshine Base', size: '~60MB', quality: 4, speed: 'Super Fast', desc: 'Great balance of speed and accuracy', downloadTime: '~20 sec' },
+    { id: 'distil-whisper/distil-small.en', name: 'Distil Small', size: '~170MB', quality: 4, speed: 'Very Fast', desc: 'English only, high accuracy', downloadTime: '~1 min' },
+    { id: 'distil-whisper/distil-large-v3', name: 'Distil Large V3', size: '~750MB', quality: 5, speed: 'Fast', desc: 'Multilingual, best quality', downloadTime: '~3 min' },
 ];
 
 function QualityStars({ count }: { count: number }) {
@@ -178,17 +179,17 @@ export default function Settings({
                         Model Guide
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                        <div className="bg-muted/30 rounded-lg p-2">
-                            <div className="font-medium">English Only</div>
-                            <div className="text-muted-foreground">Distil Small/Medium</div>
+                        <div className="bg-green-500/10 rounded-lg p-2 border border-green-500/20">
+                            <div className="font-medium text-green-600 dark:text-green-400">⚡ Max Speed</div>
+                            <div className="text-muted-foreground">Moonshine Tiny</div>
                         </div>
                         <div className="bg-muted/30 rounded-lg p-2">
-                            <div className="font-medium">Multilingual</div>
+                            <div className="font-medium">Balanced</div>
+                            <div className="text-muted-foreground">Moonshine Base</div>
+                        </div>
+                        <div className="bg-muted/30 rounded-lg p-2">
+                            <div className="font-medium">Best Quality</div>
                             <div className="text-muted-foreground">Distil Large V3</div>
-                        </div>
-                        <div className="bg-muted/30 rounded-lg p-2">
-                            <div className="font-medium">Max Speed</div>
-                            <div className="text-muted-foreground">Distil Small + GPU</div>
                         </div>
                     </div>
                 </div>

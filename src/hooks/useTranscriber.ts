@@ -42,7 +42,7 @@ export function useTranscriber() {
     const [isModelLoading, setIsModelLoading] = useState(false);
     const [progressItems, setProgressItems] = useState<ProgressItem[]>([]);
     const [output, setOutput] = useState<TranscriberOutput | undefined>(undefined);
-    const [model, setModel] = useState<string>('distil-whisper/distil-small.en'); // Fast distilled model
+    const [model, setModel] = useState<string>('onnx-community/moonshine-tiny-ONNX'); // Ultra-fast Moonshine
     const [language, setLanguage] = useState<string>('auto');
     const [task, setTask] = useState<'transcribe' | 'translate'>('transcribe');
     

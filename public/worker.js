@@ -17,7 +17,7 @@ async function detectWebGPU() {
                 return true;
             }
         }
-    } catch (e) {
+    } catch {
         console.log('[InternetScribe] WebGPU not available, using CPU');
     }
     return false;
@@ -28,11 +28,11 @@ const webgpuPromise = detectWebGPU();
 
 class PipelineSingleton {
     static task = 'automatic-speech-recognition';
-    static model = 'distil-whisper/distil-small.en';
+    static model = 'onnx-community/moonshine-tiny-ONNX';
     static instance = null;
     static currentDevice = null;
 
-    static async getInstance(progress_callback = null, model = 'distil-whisper/distil-small.en') {
+    static async getInstance(progress_callback = null, model = 'onnx-community/moonshine-tiny-ONNX') {
         // Wait for WebGPU detection to complete
         await webgpuPromise;
         

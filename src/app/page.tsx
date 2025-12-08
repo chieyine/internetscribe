@@ -44,7 +44,8 @@ export default function Home() {
     addQueueItems,
     queue,
     lastError,
-    clearLastError
+    clearLastError,
+    isGPU
   } = useTranscriber();
   
   const [hasAudio, setHasAudio] = useState(false);
@@ -189,6 +190,7 @@ export default function Home() {
                 isSummarizing={isSummarizing}
                 summary={summary}
                 onSummarize={summarize}
+                isGPU={isGPU}
               />
             )}
           </div>

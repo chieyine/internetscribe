@@ -49,6 +49,10 @@ export function useTranscriber() {
     const [queue, setQueue] = useState<QueueItem[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     
+    // GPU acceleration state
+    const [device, setDevice] = useState<'wasm' | 'webgpu'>('wasm');
+    const [isGPU, setIsGPU] = useState(false);
+    
     // Use ref to avoid stale closure in async operations
     const queueRef = useRef<QueueItem[]>([]);
     const isProcessingRef = useRef(false);
@@ -185,9 +189,17 @@ export function useTranscriber() {
 
         const onMessageReceived = (e: MessageEvent) => {
             switch (e.data.status) {
+                case 'device-info':
+                    setDevice(e.data.device);
+                    setIsGPU(e.data.isGPU);
+                    break;
                 case 'loading':
                     setIsBusy(true);
                     setIsModelLoading(true);
+                    if (e.data.device) {
+                        setDevice(e.data.device);
+                        setIsGPU(e.data.device === 'webgpu');
+                    }
                     break;
                 case 'progress':
                     // Update progress items
@@ -301,6 +313,8 @@ export function useTranscriber() {
         queue,
         addQueueItems,
         lastError,
-        clearLastError
+        clearLastError,
+        device,
+        isGPU
     };
 }

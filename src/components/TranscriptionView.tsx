@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Loader2, RefreshCw, CheckCircle2, FileJson, FileText, Subtitles, Copy, Check, Search, X, Upload, Video, Music, Sparkles } from 'lucide-react';
+import { Loader2, RefreshCw, CheckCircle2, FileJson, FileText, Subtitles, Copy, Check, Search, X, Upload, Video, Music, Sparkles, Zap } from 'lucide-react';
 import { ProgressItem, TranscriberOutput } from '../hooks/useTranscriber';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
@@ -17,6 +17,7 @@ interface TranscriptionViewProps {
     isSummarizing: boolean;
     summary?: string;
     onSummarize: () => void;
+    isGPU?: boolean;
 }
 
 export default function TranscriptionView({
@@ -30,6 +31,7 @@ export default function TranscriptionView({
     isSummarizing,
     summary,
     onSummarize,
+    isGPU = false,
 }: TranscriptionViewProps) {
     const [copied, setCopied] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -209,10 +211,18 @@ export default function TranscriptionView({
                                 <div className="absolute inset-0 bg-foreground/10 rounded-full blur-xl animate-pulse" />
                                 <Loader2 className="w-8 h-8 animate-spin text-foreground relative z-10" />
                             </div>
-                            <div className="space-y-1">
-                                <h3 className="text-xl font-semibold tracking-tight">
-                                    {isModelLoading ? 'Initializing AI Model' : 'Transcribing Audio'}
-                                </h3>
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-center gap-2">
+                                    <h3 className="text-xl font-semibold tracking-tight">
+                                        {isModelLoading ? 'Initializing AI Model' : 'Transcribing Audio'}
+                                    </h3>
+                                    {isGPU && (
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-600 dark:text-green-400 border border-green-500/30">
+                                            <Zap className="w-3 h-3" />
+                                            GPU
+                                        </span>
+                                    )}
+                                </div>
                                 <p className="text-sm text-muted-foreground">
                                     {isModelLoading 
                                         ? 'This happens once. Downloading Whisper model...' 
@@ -220,6 +230,12 @@ export default function TranscriptionView({
                                             ? `Processing your audio locally... (~${Math.ceil(estimatedTime / 60)} min)` 
                                             : 'Processing your audio locally...'}
                                 </p>
+                                {isGPU && !isModelLoading && (
+                                    <p className="text-xs text-green-600 dark:text-green-400 flex items-center justify-center gap-1">
+                                        <Zap className="w-3 h-3" />
+                                        WebGPU acceleration active - up to 10x faster!
+                                    </p>
+                                )}
                             </div>
                         </div>
                         

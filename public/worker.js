@@ -4,15 +4,64 @@ import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers
 env.allowLocalModels = false;
 env.useBrowserCache = true; // Enable caching to avoid re-downloading models
 
+// WebGPU detection
+let device = 'wasm'; // Default to CPU/WASM
+
+async function detectWebGPU() {
+    try {
+        if (typeof navigator !== 'undefined' && navigator.gpu) {
+            const adapter = await navigator.gpu.requestAdapter();
+            if (adapter) {
+                device = 'webgpu';
+                console.log('[InternetScribe] WebGPU detected - GPU acceleration enabled! 🚀');
+                return true;
+            }
+        }
+    } catch (e) {
+        console.log('[InternetScribe] WebGPU not available, using CPU');
+    }
+    return false;
+}
+
+// Detect WebGPU on worker load
+const webgpuPromise = detectWebGPU();
+
 class PipelineSingleton {
     static task = 'automatic-speech-recognition';
     static model = 'xenova/whisper-tiny.en';
     static instance = null;
+    static currentDevice = null;
 
     static async getInstance(progress_callback = null, model = 'xenova/whisper-tiny.en') {
-        if (this.instance === null || this.model !== model) {
+        // Wait for WebGPU detection to complete
+        await webgpuPromise;
+        
+        if (this.instance === null || this.model !== model || this.currentDevice !== device) {
             this.model = model;
-            this.instance = await pipeline(this.task, this.model, { progress_callback });
+            this.currentDevice = device;
+            
+            const options = { 
+                progress_callback,
+            };
+            
+            // Try WebGPU first, fall back to WASM
+            if (device === 'webgpu') {
+                try {
+                    options.device = 'webgpu';
+                    options.dtype = 'fp32'; // WebGPU works well with fp32
+                    this.instance = await pipeline(this.task, this.model, options);
+                    console.log('[InternetScribe] Model loaded with WebGPU acceleration');
+                } catch (e) {
+                    console.warn('[InternetScribe] WebGPU failed, falling back to CPU:', e.message);
+                    device = 'wasm';
+                    this.currentDevice = 'wasm';
+                    delete options.device;
+                    delete options.dtype;
+                    this.instance = await pipeline(this.task, this.model, options);
+                }
+            } else {
+                this.instance = await pipeline(this.task, this.model, options);
+            }
         }
         return this.instance;
     }
@@ -33,6 +82,17 @@ class SummarizationPipelineSingleton {
 
 self.addEventListener('message', async (event) => {
     const { action } = event.data;
+
+    // Check device status
+    if (action === 'check-device') {
+        await webgpuPromise;
+        self.postMessage({ 
+            status: 'device-info', 
+            device: device,
+            isGPU: device === 'webgpu'
+        });
+        return;
+    }
 
     if (action === 'summarize') {
         const { text } = event.data;
@@ -62,7 +122,7 @@ self.addEventListener('message', async (event) => {
 
     // Only send loading status if not a partial update
     if (!isPartial) {
-        self.postMessage({ status: 'loading' });
+        self.postMessage({ status: 'loading', device: device });
     }
 
     try {
@@ -84,6 +144,7 @@ self.addEventListener('message', async (event) => {
         self.postMessage({
             status: isPartial ? 'partial-complete' : 'complete',
             result: output,
+            device: device, // Report which device was used
         });
     } catch (error) {
         self.postMessage({
@@ -92,3 +153,4 @@ self.addEventListener('message', async (event) => {
         });
     }
 });
+

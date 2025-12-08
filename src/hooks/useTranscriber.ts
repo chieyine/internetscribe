@@ -15,6 +15,13 @@ export interface ProgressItem {
     total: number;
 }
 
+export interface TranscriptionOptions {
+    identifySpeakers: boolean;
+    removeFillers: boolean;
+    addTimestamps: boolean;
+    meetingNotes: boolean;
+}
+
 export interface QueueItem {
     id: string;
     file: File;
@@ -30,6 +37,12 @@ export function useTranscriber() {
     const [progressItems, setProgressItems] = useState<ProgressItem[]>([]);
     const [output, setOutput] = useState<TranscriberOutput | undefined>(undefined);
     const [language, setLanguage] = useState<string>('auto');
+    const [options, setOptions] = useState<TranscriptionOptions>({
+        identifySpeakers: false,
+        removeFillers: false,
+        addTimestamps: false,
+        meetingNotes: false,
+    });
     
     const [queue, setQueue] = useState<QueueItem[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -67,6 +80,7 @@ export function useTranscriber() {
         const formData = new FormData();
         formData.append('audio', file);
         formData.append('language', language);
+        formData.append('options', JSON.stringify(options));
         
         setUploadProgress(0);
         
@@ -94,7 +108,7 @@ export function useTranscriber() {
         };
         
         return result;
-    }, [language]);
+    }, [language, options]);
 
     const processNextInQueue = useCallback(async () => {
         if (isProcessingRef.current) return;
@@ -175,6 +189,8 @@ export function useTranscriber() {
         output,
         language,
         setLanguage,
+        options,
+        setOptions,
         start,
         estimatedTime,
         queue,

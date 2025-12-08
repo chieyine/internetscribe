@@ -29,6 +29,8 @@ export default function Home() {
     output, 
     language,
     setLanguage,
+    options,
+    setOptions,
     start, 
     estimatedTime, 
     addQueueItems,
@@ -124,6 +126,8 @@ export default function Home() {
                             <Settings 
                                 language={language} 
                                 setLanguage={setLanguage}
+                                options={options}
+                                setOptions={setOptions}
                             />
                         </motion.div>
                     )}

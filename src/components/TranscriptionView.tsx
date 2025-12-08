@@ -1,8 +1,20 @@
 import React, { useState, useCallback } from 'react';
-import { Loader2, RefreshCw, CheckCircle2, FileJson, FileText, Subtitles, Copy, Check, Search, X } from 'lucide-react';
+import { Loader2, RefreshCw, CheckCircle2, FileJson, FileText, Subtitles, Copy, Check, Search, X, Sparkles, Languages, Clock } from 'lucide-react';
 import { ProgressItem, TranscriberOutput } from '../hooks/useTranscriber';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+
+const TRANSLATE_LANGUAGES = [
+    { code: 'en', name: 'English' },
+    { code: 'es', name: 'Spanish' },
+    { code: 'fr', name: 'French' },
+    { code: 'de', name: 'German' },
+    { code: 'it', name: 'Italian' },
+    { code: 'pt', name: 'Portuguese' },
+    { code: 'ja', name: 'Japanese' },
+    { code: 'ko', name: 'Korean' },
+    { code: 'zh', name: 'Chinese' },
+];
 
 interface TranscriptionViewProps {
     isBusy: boolean;
@@ -22,6 +34,15 @@ export default function TranscriptionView({
     const [copied, setCopied] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearch, setShowSearch] = useState(false);
+    
+    // Summary state
+    const [summary, setSummary] = useState<string | null>(null);
+    const [isSummarizing, setIsSummarizing] = useState(false);
+    
+    // Translation state
+    const [translation, setTranslation] = useState<string | null>(null);
+    const [isTranslating, setIsTranslating] = useState(false);
+    const [showTranslateMenu, setShowTranslateMenu] = useState(false);
 
     const copyToClipboard = useCallback(async () => {
         if (!output) return;
@@ -30,6 +51,47 @@ export default function TranscriptionView({
         setTimeout(() => setCopied(false), 2000);
     }, [output]);
 
+    const handleSummarize = async () => {
+        if (!output || isSummarizing) return;
+        setIsSummarizing(true);
+        try {
+            const response = await fetch('/api/summarize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: output.text }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                setSummary(data.summary);
+            }
+        } catch (error) {
+            console.error('Summarization error:', error);
+        } finally {
+            setIsSummarizing(false);
+        }
+    };
+
+    const handleTranslate = async (targetLanguage: string) => {
+        if (!output || isTranslating) return;
+        setIsTranslating(true);
+        setShowTranslateMenu(false);
+        try {
+            const response = await fetch('/api/translate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: output.text, targetLanguage }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                setTranslation(data.translation);
+            }
+        } catch (error) {
+            console.error('Translation error:', error);
+        } finally {
+            setIsTranslating(false);
+        }
+    };
+
     const onSearch = () => setShowSearch(!showSearch);
 
     useKeyboardShortcuts({
@@ -37,6 +99,10 @@ export default function TranscriptionView({
         onSearch,
         onReset,
     });
+
+    // Calculate stats
+    const wordCount = output?.text.split(/\s+/).filter(Boolean).length || 0;
+    const readTime = Math.ceil(wordCount / 200); // Average 200 words per minute
 
     const formatTimeVTT = (seconds: number) => {
         const h = Math.floor(seconds / 3600);
@@ -68,6 +134,8 @@ export default function TranscriptionView({
                 content = JSON.stringify({
                     text: output.text,
                     chunks: output.chunks,
+                    wordCount,
+                    summary: summary || undefined,
                 }, null, 2);
                 mimeType = 'application/json';
                 filename = 'transcription.json';
@@ -146,7 +214,6 @@ export default function TranscriptionView({
                             </div>
                         </div>
                         
-                        {/* Upload progress bar */}
                         {uploadProgress > 0 && uploadProgress < 100 && (
                             <div className="space-y-2 max-w-md mx-auto">
                                 <div className="flex justify-between text-xs font-medium text-muted-foreground">
@@ -175,77 +242,161 @@ export default function TranscriptionView({
                     transition={{ duration: 0.4, delay: 0.1 }}
                     className="space-y-6"
                 >
-                    {/* Header with actions */}
+                    {/* Header with stats */}
                     <div className="flex flex-col md:flex-row items-center justify-between border-b border-border pb-6 gap-4">
                         <div className="flex items-center gap-3">
                             <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
-                            <h2 className="text-2xl font-bold tracking-tight">Transcription Complete</h2>
-                        </div>
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            <button
-                                onClick={onReset}
-                                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted"
-                            >
-                                <RefreshCw className="w-4 h-4" />
-                                New
-                            </button>
-                            <button
-                                onClick={copyToClipboard}
-                                className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                                    copied 
-                                        ? 'bg-green-500/20 text-green-600 dark:text-green-400' 
-                                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                                }`}
-                            >
-                                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                                {copied ? 'Copied!' : 'Copy'}
-                            </button>
-                            
-                            <button
-                                onClick={() => setShowSearch(!showSearch)}
-                                className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                                    showSearch 
-                                        ? 'bg-foreground text-background' 
-                                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                                }`}
-                            >
-                                <Search className="w-4 h-4" />
-                            </button>
-                            <div className="h-6 w-px bg-border mx-2 hidden md:block" />
-                            <button
-                                onClick={() => downloadFile('txt')}
-                                className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors"
-                                title="Download Text"
-                            >
-                                <FileText className="w-4 h-4" />
-                                TXT
-                            </button>
-                            <button
-                                onClick={() => downloadFile('json')}
-                                className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors"
-                                title="Download JSON"
-                            >
-                                <FileJson className="w-4 h-4" />
-                                JSON
-                            </button>
-                            <button
-                                onClick={() => downloadFile('vtt')}
-                                className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors"
-                                title="Download VTT (Subtitles)"
-                            >
-                                <Subtitles className="w-4 h-4" />
-                                VTT
-                            </button>
-                            <button
-                                onClick={() => downloadFile('srt')}
-                                className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors"
-                                title="Download SRT (Subtitles)"
-                            >
-                                <Subtitles className="w-4 h-4" />
-                                SRT
-                            </button>
+                            <div>
+                                <h2 className="text-2xl font-bold tracking-tight">Transcription Complete</h2>
+                                <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                                    <span className="flex items-center gap-1">
+                                        <FileText className="w-3 h-3" />
+                                        {wordCount.toLocaleString()} words
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <Clock className="w-3 h-3" />
+                                        ~{readTime} min read
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    {/* Action buttons */}
+                    <div className="flex flex-wrap gap-2">
+                        <button
+                            onClick={onReset}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted"
+                        >
+                            <RefreshCw className="w-4 h-4" />
+                            New
+                        </button>
+                        <button
+                            onClick={copyToClipboard}
+                            className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                                copied 
+                                    ? 'bg-green-500/20 text-green-600 dark:text-green-400' 
+                                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                            }`}
+                        >
+                            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                            {copied ? 'Copied!' : 'Copy'}
+                        </button>
+                        
+                        {/* Summarize button */}
+                        <button
+                            onClick={handleSummarize}
+                            disabled={isSummarizing}
+                            className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                                summary 
+                                    ? 'bg-purple-500/20 text-purple-600 dark:text-purple-400' 
+                                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                            } ${isSummarizing ? 'opacity-50' : ''}`}
+                        >
+                            {isSummarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                            {isSummarizing ? 'Summarizing...' : summary ? 'Summarized' : 'Summarize'}
+                        </button>
+
+                        {/* Translate dropdown */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowTranslateMenu(!showTranslateMenu)}
+                                disabled={isTranslating}
+                                className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                                    translation 
+                                        ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400' 
+                                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                                } ${isTranslating ? 'opacity-50' : ''}`}
+                            >
+                                {isTranslating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Languages className="w-4 h-4" />}
+                                {isTranslating ? 'Translating...' : 'Translate'}
+                            </button>
+                            
+                            {showTranslateMenu && (
+                                <div className="absolute top-full left-0 mt-1 bg-card border border-border rounded-lg shadow-lg p-2 z-10 min-w-[150px]">
+                                    {TRANSLATE_LANGUAGES.map((lang) => (
+                                        <button
+                                            key={lang.code}
+                                            onClick={() => handleTranslate(lang.code)}
+                                            className="w-full text-left px-3 py-1.5 text-sm rounded hover:bg-muted transition-colors"
+                                        >
+                                            {lang.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        
+                        <button
+                            onClick={() => setShowSearch(!showSearch)}
+                            className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                                showSearch 
+                                    ? 'bg-foreground text-background' 
+                                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                            }`}
+                        >
+                            <Search className="w-4 h-4" />
+                        </button>
+                        
+                        <div className="h-6 w-px bg-border mx-2 hidden md:block" />
+                        
+                        <button onClick={() => downloadFile('txt')} className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors" title="Download Text">
+                            <FileText className="w-4 h-4" />
+                            TXT
+                        </button>
+                        <button onClick={() => downloadFile('json')} className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors" title="Download JSON">
+                            <FileJson className="w-4 h-4" />
+                            JSON
+                        </button>
+                        <button onClick={() => downloadFile('vtt')} className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors" title="Download VTT">
+                            <Subtitles className="w-4 h-4" />
+                            VTT
+                        </button>
+                        <button onClick={() => downloadFile('srt')} className="flex items-center gap-2 px-3 py-2 text-sm bg-muted hover:bg-muted/80 rounded-md transition-colors" title="Download SRT">
+                            <Subtitles className="w-4 h-4" />
+                            SRT
+                        </button>
+                    </div>
+
+                    {/* Summary Section */}
+                    <AnimatePresence>
+                        {summary && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="bg-purple-500/5 border border-purple-500/20 rounded-xl p-6 space-y-2"
+                            >
+                                <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-semibold text-sm uppercase tracking-wider">
+                                    <Sparkles className="w-4 h-4" />
+                                    AI Summary
+                                </div>
+                                <div className="text-foreground/90 leading-relaxed whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none">
+                                    {summary}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Translation Section */}
+                    <AnimatePresence>
+                        {translation && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-6 space-y-2"
+                            >
+                                <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold text-sm uppercase tracking-wider">
+                                    <Languages className="w-4 h-4" />
+                                    Translation
+                                </div>
+                                <div className="text-foreground/90 leading-relaxed whitespace-pre-wrap">
+                                    {translation}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Search bar */}
                     <AnimatePresence>

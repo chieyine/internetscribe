@@ -7,6 +7,67 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 // 5 minutes timeout for long audio files
 export const maxDuration = 300;
 
+interface TranscriptionOptions {
+    identifySpeakers: boolean;
+    removeFillers: boolean;
+    addTimestamps: boolean;
+    meetingNotes: boolean;
+}
+
+function buildPrompt(language: string, options: TranscriptionOptions): string {
+    const parts: string[] = [];
+    
+    // Base instruction
+    parts.push('Please transcribe the audio content accurately.');
+    
+    // Language handling
+    if (language === 'auto') {
+        parts.push('Detect the language automatically and transcribe in that language.');
+    } else if (language !== 'en') {
+        parts.push(`The audio is in ${language}. Transcribe it in that language.`);
+    }
+    
+    // Speaker identification
+    if (options.identifySpeakers) {
+        parts.push('Identify different speakers and label them as [Speaker 1], [Speaker 2], etc. When a different person speaks, start a new paragraph with their speaker label.');
+    }
+    
+    // Timestamps
+    if (options.addTimestamps) {
+        parts.push('Add timestamps throughout the transcript. Insert a timestamp marker like [00:30] or [01:45] approximately every 30 seconds of audio.');
+    }
+    
+    // Remove filler words
+    if (options.removeFillers) {
+        parts.push('Remove filler words like "um", "uh", "like", "you know", "I mean", "so", and similar verbal fillers. Create a clean, readable transcript.');
+    }
+    
+    // Meeting notes format
+    if (options.meetingNotes) {
+        parts.push(`Format the output as meeting notes with the following structure:
+## Summary
+A 2-3 sentence overview of what was discussed.
+
+## Key Points
+- Bullet points of main topics discussed
+
+## Action Items
+- List any tasks, decisions, or next steps mentioned
+
+## Full Transcript
+The complete transcription below.`);
+    } else {
+        parts.push('Format it with proper punctuation and paragraphs.');
+    }
+    
+    // Final instruction
+    if (!options.meetingNotes) {
+        parts.push('Return only the transcription text, nothing else.');
+    }
+    
+    return parts.join(' ');
+}
+
 export async function POST(request: NextRequest) {
     try {
         // Check for API key
@@ -21,6 +82,16 @@ export async function POST(request: NextRequest) {
         const formData = await request.formData();
         const audioFile = formData.get('audio') as File;
         const language = formData.get('language') as string || 'auto';
+        const optionsStr = formData.get('options') as string || '{}';
+        
+        // Parse options with defaults
+        const defaultOptions: TranscriptionOptions = {
+            identifySpeakers: false,
+            removeFillers: false,
+            addTimestamps: false,
+            meetingNotes: false,
+        };
+        const options: TranscriptionOptions = { ...defaultOptions, ...JSON.parse(optionsStr) };
 
         if (!audioFile) {
             return NextResponse.json(
@@ -39,14 +110,8 @@ export async function POST(request: NextRequest) {
         // Get Gemini model
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-        // Build prompt based on language
-        let prompt = 'Please transcribe the audio content accurately. ';
-        if (language === 'auto') {
-            prompt += 'Detect the language automatically and transcribe in that language. ';
-        } else if (language !== 'en') {
-            prompt += `The audio is in ${language}. Transcribe it in that language. `;
-        }
-        prompt += 'Return only the transcription text, nothing else. Format it with proper punctuation and paragraphs.';
+        // Build dynamic prompt based on options
+        const prompt = buildPrompt(language, options);
 
         // Call Gemini API
         const result = await model.generateContent([
@@ -66,6 +131,7 @@ export async function POST(request: NextRequest) {
             success: true,
             transcription: transcription,
             language: language,
+            options: options,
         });
 
     } catch (error: unknown) {

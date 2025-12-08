@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Globe, Info } from 'lucide-react';
+import { Globe, Info, Users, Clock, Sparkles, FileText } from 'lucide-react';
 
 const LANGUAGES = [
     { code: 'auto', name: 'Auto-detect' },
@@ -19,12 +19,59 @@ const LANGUAGES = [
     { code: 'ar', name: 'Arabic' },
 ];
 
+export interface TranscriptionOptions {
+    identifySpeakers: boolean;
+    removeFillers: boolean;
+    addTimestamps: boolean;
+    meetingNotes: boolean;
+}
+
 interface SettingsProps {
     language: string;
     setLanguage: (language: string) => void;
+    options: TranscriptionOptions;
+    setOptions: (options: TranscriptionOptions) => void;
 }
 
-export default function Settings({ language, setLanguage }: SettingsProps) {
+function ToggleOption({ 
+    icon: Icon, 
+    label, 
+    description, 
+    checked, 
+    onChange 
+}: { 
+    icon: React.ElementType;
+    label: string; 
+    description: string; 
+    checked: boolean; 
+    onChange: (checked: boolean) => void;
+}) {
+    return (
+        <label className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors">
+            <div className="flex-shrink-0 mt-0.5">
+                <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) => onChange(e.target.checked)}
+                    className="w-4 h-4 rounded border-border text-foreground focus:ring-foreground/20"
+                />
+            </div>
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 font-medium text-sm">
+                    <Icon className="w-4 h-4 text-muted-foreground" />
+                    {label}
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+            </div>
+        </label>
+    );
+}
+
+export default function Settings({ language, setLanguage, options, setOptions }: SettingsProps) {
+    const updateOption = (key: keyof TranscriptionOptions, value: boolean) => {
+        setOptions({ ...options, [key]: value });
+    };
+
     return (
         <motion.div 
             initial={{ opacity: 0, y: -10 }}
@@ -54,18 +101,54 @@ export default function Settings({ language, setLanguage }: SettingsProps) {
                 </div>
             </div>
 
+            {/* Transcription Options */}
+            <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <Sparkles className="w-4 h-4" />
+                    Transcription Options
+                </div>
+                <div className="grid sm:grid-cols-2 gap-2">
+                    <ToggleOption
+                        icon={Users}
+                        label="Identify Speakers"
+                        description="Label different speakers in the transcript"
+                        checked={options.identifySpeakers}
+                        onChange={(v) => updateOption('identifySpeakers', v)}
+                    />
+                    <ToggleOption
+                        icon={Clock}
+                        label="Add Timestamps"
+                        description="Include time markers throughout"
+                        checked={options.addTimestamps}
+                        onChange={(v) => updateOption('addTimestamps', v)}
+                    />
+                    <ToggleOption
+                        icon={Sparkles}
+                        label="Remove Filler Words"
+                        description="Remove um, uh, like, etc."
+                        checked={options.removeFillers}
+                        onChange={(v) => updateOption('removeFillers', v)}
+                    />
+                    <ToggleOption
+                        icon={FileText}
+                        label="Meeting Notes Format"
+                        description="Structure with action items & key points"
+                        checked={options.meetingNotes}
+                        onChange={(v) => updateOption('meetingNotes', v)}
+                    />
+                </div>
+            </div>
+
             {/* Info Section */}
             <div className="border-t border-border pt-4">
-                <div className="flex items-center gap-2 text-sm font-medium mb-3">
+                <div className="flex items-center gap-2 text-sm font-medium mb-2">
                     <Info className="w-4 h-4" />
                     About
                 </div>
-                <p className="text-sm text-muted-foreground">
-                    Powered by Google Gemini AI. Supports large files up to 100MB. 
-                    Fast, accurate transcription in seconds.
+                <p className="text-xs text-muted-foreground">
+                    Powered by Google Gemini AI. Fast, accurate transcription in seconds.
                 </p>
             </div>
         </motion.div>
     );
 }
-

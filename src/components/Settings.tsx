@@ -31,10 +31,10 @@ const LANGUAGES = [
 ];
 
 const MODELS = [
-    { id: 'Xenova/whisper-tiny', name: 'Tiny', size: '~40MB', quality: 2, speed: 'Ultra Fast', desc: 'Fastest, quick drafts', downloadTime: '~15 sec' },
-    { id: 'Xenova/whisper-base', name: 'Base', size: '~75MB', quality: 3, speed: 'Very Fast', desc: 'Fast with good accuracy', downloadTime: '~30 sec' },
-    { id: 'Xenova/whisper-small', name: 'Small', size: '~250MB', quality: 4, speed: 'Fast', desc: 'Great for most use cases', downloadTime: '~1 min' },
-    { id: 'distil-whisper/distil-large-v3', name: 'Distil Large V3', size: '~750MB', quality: 5, speed: 'Moderate', desc: 'Best quality, multilingual', downloadTime: '~3 min' },
+    { id: 'onnx-community/moonshine-tiny-ONNX', name: 'Moonshine Tiny', size: '~15MB', quality: 3, speed: 'Ultra Fast', desc: 'Real-time, 50x faster than large models', downloadTime: '~5 sec' },
+    { id: 'onnx-community/moonshine-base-ONNX', name: 'Moonshine Base', size: '~60MB', quality: 4, speed: 'Super Fast', desc: 'Great balance of speed and accuracy', downloadTime: '~20 sec' },
+    { id: 'Xenova/whisper-small', name: 'Whisper Small', size: '~250MB', quality: 4, speed: 'Fast', desc: 'Fallback if Moonshine fails', downloadTime: '~1 min' },
+    { id: 'distil-whisper/distil-large-v3', name: 'Distil Large', size: '~750MB', quality: 5, speed: 'Moderate', desc: 'Best quality, multilingual', downloadTime: '~3 min' },
 ];
 
 function QualityStars({ count }: { count: number }) {
@@ -181,15 +181,15 @@ export default function Settings({
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
                         <div className="bg-green-500/10 rounded-lg p-2 border border-green-500/20">
                             <div className="font-medium text-green-600 dark:text-green-400">⚡ Max Speed</div>
-                            <div className="text-muted-foreground">Tiny + GPU</div>
+                            <div className="text-muted-foreground">Moonshine Tiny</div>
                         </div>
                         <div className="bg-muted/30 rounded-lg p-2">
                             <div className="font-medium">Balanced</div>
-                            <div className="text-muted-foreground">Base or Small</div>
+                            <div className="text-muted-foreground">Moonshine Base</div>
                         </div>
                         <div className="bg-muted/30 rounded-lg p-2">
                             <div className="font-medium">Best Quality</div>
-                            <div className="text-muted-foreground">Distil Large V3</div>
+                            <div className="text-muted-foreground">Distil Large</div>
                         </div>
                     </div>
                 </div>

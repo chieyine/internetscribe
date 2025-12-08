@@ -1,4 +1,4 @@
-import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
+import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2';
 
 // Skip local model checks
 env.allowLocalModels = false;
@@ -28,11 +28,11 @@ const webgpuPromise = detectWebGPU();
 
 class PipelineSingleton {
     static task = 'automatic-speech-recognition';
-    static model = 'Xenova/whisper-tiny';
+    static model = 'onnx-community/moonshine-tiny-ONNX';
     static instance = null;
     static currentDevice = null;
 
-    static async getInstance(progress_callback = null, model = 'Xenova/whisper-tiny') {
+    static async getInstance(progress_callback = null, model = 'onnx-community/moonshine-tiny-ONNX') {
         // Wait for WebGPU detection to complete
         await webgpuPromise;
         

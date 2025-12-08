@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useTranscriber } from "@/hooks/useTranscriber";
 import ThemeToggle from "@/components/ThemeToggle";
 import { AnimatePresence, motion } from "framer-motion";
-import { Sparkles, Settings2, Loader2, AlertCircle, X } from "lucide-react";
+import { Sparkles, Settings2, Loader2, AlertCircle, X, BookOpen } from "lucide-react";
 
 // Lazy load components
 const FileDropzone = dynamic(() => import("@/components/FileDropzone"), { 
@@ -77,7 +78,14 @@ export default function Home() {
       <div className="flex-1 flex flex-col items-center p-4 sm:p-8 gap-8 max-w-5xl mx-auto w-full">
         {/* Header */}
         <header className="flex flex-col items-center gap-4 text-center pt-8 animate-in fade-in slide-in-from-top-4 duration-700 relative w-full">
-          <div className="absolute top-4 right-4 sm:right-8">
+          <div className="absolute top-4 right-4 sm:right-8 flex items-center gap-3">
+            <Link 
+              href="/blog" 
+              className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              title="Blog"
+            >
+              <BookOpen className="w-4 h-4" />
+            </Link>
             <ThemeToggle />
           </div>
           <div className="flex items-center gap-3">

@@ -224,27 +224,55 @@ export default function TranscriptionView({
                         </div>
                         
                         <div className="space-y-4 max-w-md mx-auto">
-                            {progressItems.map((item, index) => (
-                                <motion.div 
-                                    key={index}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="space-y-2"
-                                >
-                                    <div className="flex justify-between text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                        <span>{item.file}</span>
-                                        <span>{Math.round((item.loaded / item.total) * 100)}%</span>
-                                    </div>
-                                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                                        <motion.div 
-                                            className="h-full bg-foreground"
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${(item.loaded / item.total) * 100}%` }}
-                                            transition={{ type: "spring", stiffness: 50, damping: 15 }}
-                                        />
-                                    </div>
-                                </motion.div>
-                            ))}
+                            {progressItems.map((item, index) => {
+                                const loadedMB = (item.loaded / (1024 * 1024)).toFixed(1);
+                                const totalMB = (item.total / (1024 * 1024)).toFixed(1);
+                                const percent = Math.round((item.loaded / item.total) * 100);
+                                const isComplete = percent >= 100;
+                                
+                                return (
+                                    <motion.div 
+                                        key={index}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        className="space-y-2"
+                                    >
+                                        <div className="flex justify-between text-xs font-medium text-muted-foreground">
+                                            <span className="truncate max-w-[180px]" title={item.file}>
+                                                {item.file.split('/').pop()?.replace('_quantized', '')}
+                                            </span>
+                                            <span className="flex items-center gap-2">
+                                                {isComplete ? (
+                                                    <span className="text-green-600 dark:text-green-400">✓ Cached</span>
+                                                ) : (
+                                                    <>
+                                                        <span>{loadedMB} / {totalMB} MB</span>
+                                                        <span className="text-foreground font-semibold">{percent}%</span>
+                                                    </>
+                                                )}
+                                            </span>
+                                        </div>
+                                        <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                            <motion.div 
+                                                className={`h-full ${isComplete ? 'bg-green-500' : 'bg-foreground'}`}
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${percent}%` }}
+                                                transition={{ type: "spring", stiffness: 50, damping: 15 }}
+                                            />
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                            
+                            {/* Helpful tips during download */}
+                            {isModelLoading && progressItems.length > 0 && (
+                                <div className="text-xs text-muted-foreground text-center mt-4 p-3 bg-muted/30 rounded-lg space-y-1">
+                                    <p className="flex items-center justify-center gap-1.5">
+                                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                        Models cache in your browser - next time is instant!
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </motion.div>
                 )}

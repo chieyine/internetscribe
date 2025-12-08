@@ -31,11 +31,11 @@ const LANGUAGES = [
 ];
 
 const MODELS = [
-    { id: 'xenova/whisper-tiny', name: 'Tiny', size: '~40MB', quality: 2, speed: 'Fastest', desc: 'Quick drafts, short clips' },
-    { id: 'xenova/whisper-base', name: 'Base', size: '~75MB', quality: 3, speed: 'Fast', desc: 'Everyday use, clear audio' },
-    { id: 'xenova/whisper-small', name: 'Small', size: '~250MB', quality: 4, speed: 'Moderate', desc: 'Good for most use cases' },
-    { id: 'xenova/whisper-medium', name: 'Medium', size: '~750MB', quality: 5, speed: 'Slower', desc: 'High accuracy, complex audio' },
-    { id: 'xenova/whisper-large-v3', name: 'Large V3', size: '~1.5GB', quality: 5, speed: 'Slowest', desc: 'Best quality, professional use' },
+    { id: 'xenova/whisper-tiny', name: 'Tiny', size: '~40MB', quality: 2, speed: 'Fastest', desc: 'Quick drafts, short clips', downloadTime: '~30 sec' },
+    { id: 'xenova/whisper-base', name: 'Base', size: '~75MB', quality: 3, speed: 'Fast', desc: 'Everyday use, clear audio', downloadTime: '~1 min' },
+    { id: 'xenova/whisper-small', name: 'Small', size: '~250MB', quality: 4, speed: 'Moderate', desc: 'Good for most use cases', downloadTime: '~2 min' },
+    { id: 'xenova/whisper-medium', name: 'Medium', size: '~750MB', quality: 5, speed: 'Slower', desc: 'High accuracy, complex audio', downloadTime: '~5 min' },
+    { id: 'xenova/whisper-large-v3', name: 'Large V3', size: '~1.5GB', quality: 5, speed: 'Slowest', desc: 'Best quality, professional use', downloadTime: '~10 min' },
 ];
 
 function QualityStars({ count }: { count: number }) {
@@ -94,9 +94,12 @@ export default function Settings({
                             <QualityStars count={selectedModel.quality} />
                         </div>
                         <p className="text-xs text-muted-foreground">{selectedModel.desc}</p>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                             <span>Size: {selectedModel.size}</span>
                             <span>Speed: {selectedModel.speed}</span>
+                            <span className="text-amber-600 dark:text-amber-400">
+                                First download: {selectedModel.downloadTime}
+                            </span>
                         </div>
                     </div>
 

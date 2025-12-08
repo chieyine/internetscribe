@@ -31,11 +31,9 @@ const LANGUAGES = [
 ];
 
 const MODELS = [
-    { id: 'xenova/whisper-tiny', name: 'Tiny', size: '~40MB', quality: 2, speed: 'Fastest', desc: 'Quick drafts, short clips', downloadTime: '~30 sec' },
-    { id: 'xenova/whisper-base', name: 'Base', size: '~75MB', quality: 3, speed: 'Fast', desc: 'Everyday use, clear audio', downloadTime: '~1 min' },
-    { id: 'xenova/whisper-small', name: 'Small', size: '~250MB', quality: 4, speed: 'Moderate', desc: 'Good for most use cases', downloadTime: '~2 min' },
-    { id: 'xenova/whisper-medium', name: 'Medium', size: '~750MB', quality: 5, speed: 'Slower', desc: 'High accuracy, complex audio', downloadTime: '~5 min' },
-    { id: 'xenova/whisper-large-v3', name: 'Large V3', size: '~1.5GB', quality: 5, speed: 'Slowest', desc: 'Best quality, professional use', downloadTime: '~10 min' },
+    { id: 'distil-whisper/distil-small.en', name: 'Distil Small', size: '~170MB', quality: 4, speed: 'Very Fast', desc: 'English only, 8x faster than Large', downloadTime: '~1 min' },
+    { id: 'distil-whisper/distil-medium.en', name: 'Distil Medium', size: '~400MB', quality: 4, speed: 'Fast', desc: 'English only, 6x faster than Large', downloadTime: '~2 min' },
+    { id: 'distil-whisper/distil-large-v3', name: 'Distil Large V3', size: '~750MB', quality: 5, speed: 'Fast', desc: 'Multilingual, 5x faster, 99% accuracy', downloadTime: '~3 min' },
 ];
 
 function QualityStars({ count }: { count: number }) {
@@ -181,16 +179,16 @@ export default function Settings({
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
                         <div className="bg-muted/30 rounded-lg p-2">
-                            <div className="font-medium">Quick Notes</div>
-                            <div className="text-muted-foreground">Use Tiny or Base</div>
+                            <div className="font-medium">English Only</div>
+                            <div className="text-muted-foreground">Distil Small/Medium</div>
                         </div>
                         <div className="bg-muted/30 rounded-lg p-2">
-                            <div className="font-medium">Meetings</div>
-                            <div className="text-muted-foreground">Use Small or Medium</div>
+                            <div className="font-medium">Multilingual</div>
+                            <div className="text-muted-foreground">Distil Large V3</div>
                         </div>
                         <div className="bg-muted/30 rounded-lg p-2">
-                            <div className="font-medium">Professional</div>
-                            <div className="text-muted-foreground">Use Large V3</div>
+                            <div className="font-medium">Max Speed</div>
+                            <div className="text-muted-foreground">Distil Small + GPU</div>
                         </div>
                     </div>
                 </div>

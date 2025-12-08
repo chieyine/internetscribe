@@ -34,7 +34,6 @@ export interface QueueItem {
 
 export function useTranscriber() {
     const [isBusy, setIsBusy] = useState(false);
-    const [progressItems, setProgressItems] = useState<ProgressItem[]>([]);
     const [output, setOutput] = useState<TranscriberOutput | undefined>(undefined);
     const [language, setLanguage] = useState<string>('auto');
     const [options, setOptions] = useState<TranscriptionOptions>({
@@ -51,7 +50,6 @@ export function useTranscriber() {
     const isProcessingRef = useRef(false);
     
     const [audioDuration, setAudioDuration] = useState<number>(0);
-    const [estimatedTime, setEstimatedTime] = useState<number | undefined>(undefined);
     
     // Error state
     const [lastError, setLastError] = useState<string | null>(null);
@@ -185,14 +183,12 @@ export function useTranscriber() {
     return {
         isBusy,
         isProcessing,
-        progressItems,
         output,
         language,
         setLanguage,
         options,
         setOptions,
         start,
-        estimatedTime,
         queue,
         addQueueItems,
         lastError,

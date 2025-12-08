@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import { ToastProvider } from "@/components/Toast";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
@@ -50,7 +51,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        <ErrorBoundary>{children}</ErrorBoundary>
+        <ToastProvider>
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </ToastProvider>
         <ServiceWorkerRegistration />
         <Analytics />
         <script

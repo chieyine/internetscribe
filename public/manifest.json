@@ -1,7 +1,7 @@
 {
   "name": "InternetScribe",
   "short_name": "InternetScribe",
-  "description": "Secure, offline audio transcription powered by AI. No uploads, 100% private.",
+  "description": "Fast, accurate audio transcription powered by Google Gemini AI. Supports multiple languages and export formats.",
   "start_url": "/",
   "scope": "/",
   "id": "/",

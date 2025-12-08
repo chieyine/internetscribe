@@ -100,6 +100,15 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Validate file size (100MB limit)
+        const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+        if (audioFile.size > MAX_FILE_SIZE) {
+            return NextResponse.json(
+                { error: 'File too large. Maximum size is 100MB.' },
+                { status: 413 }
+            );
+        }
+
         // Convert file to base64
         const arrayBuffer = await audioFile.arrayBuffer();
         const base64Audio = Buffer.from(arrayBuffer).toString('base64');

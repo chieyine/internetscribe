@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Loader2, RefreshCw, CheckCircle2, FileJson, FileText, Subtitles, Copy, Check, Search, X, Sparkles, Languages, Clock } from 'lucide-react';
-import { ProgressItem, TranscriberOutput } from '../hooks/useTranscriber';
+import { TranscriberOutput } from '../hooks/useTranscriber';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { useToast } from './Toast';
 
 const TRANSLATE_LANGUAGES = [
     { code: 'en', name: 'English' },
@@ -18,7 +19,6 @@ const TRANSLATE_LANGUAGES = [
 
 interface TranscriptionViewProps {
     isBusy: boolean;
-    progressItems: ProgressItem[];
     output?: TranscriberOutput;
     onReset: () => void;
     uploadProgress?: number;
@@ -26,7 +26,6 @@ interface TranscriptionViewProps {
 
 export default function TranscriptionView({
     isBusy,
-    progressItems,
     output,
     onReset,
     uploadProgress = 0,
@@ -34,6 +33,7 @@ export default function TranscriptionView({
     const [copied, setCopied] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearch, setShowSearch] = useState(false);
+    const { addToast } = useToast();
     
     // Summary state
     const [summary, setSummary] = useState<string | null>(null);
@@ -43,6 +43,20 @@ export default function TranscriptionView({
     const [translation, setTranslation] = useState<string | null>(null);
     const [isTranslating, setIsTranslating] = useState(false);
     const [showTranslateMenu, setShowTranslateMenu] = useState(false);
+    const translateMenuRef = useRef<HTMLDivElement>(null);
+
+    // Click-outside handler for translate menu (H4)
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (translateMenuRef.current && !translateMenuRef.current.contains(event.target as Node)) {
+                setShowTranslateMenu(false);
+            }
+        };
+        if (showTranslateMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showTranslateMenu]);
 
     const copyToClipboard = useCallback(async () => {
         if (!output) return;
@@ -63,9 +77,12 @@ export default function TranscriptionView({
             const data = await response.json();
             if (data.success) {
                 setSummary(data.summary);
+            } else {
+                addToast(data.error || 'Failed to summarize text', 'error');
             }
         } catch (error) {
             console.error('Summarization error:', error);
+            addToast('Failed to summarize text. Please try again.', 'error');
         } finally {
             setIsSummarizing(false);
         }
@@ -84,9 +101,12 @@ export default function TranscriptionView({
             const data = await response.json();
             if (data.success) {
                 setTranslation(data.translation);
+            } else {
+                addToast(data.error || 'Failed to translate text', 'error');
             }
         } catch (error) {
             console.error('Translation error:', error);
+            addToast('Failed to translate text. Please try again.', 'error');
         } finally {
             setIsTranslating(false);
         }
@@ -164,13 +184,16 @@ export default function TranscriptionView({
 
         const blob = new Blob([content], { type: mimeType });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        try {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } finally {
+            URL.revokeObjectURL(url);
+        }
     };
 
     const highlightText = (text: string, query: string) => {
@@ -298,7 +321,7 @@ export default function TranscriptionView({
                         </button>
 
                         {/* Translate dropdown */}
-                        <div className="relative">
+                        <div className="relative" ref={translateMenuRef}>
                             <button
                                 onClick={() => setShowTranslateMenu(!showTranslateMenu)}
                                 disabled={isTranslating}

@@ -36,6 +36,15 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Validate text length (500KB limit)
+        const MAX_TEXT_SIZE = 500 * 1024; // 500KB
+        if (text.length > MAX_TEXT_SIZE) {
+            return NextResponse.json(
+                { error: 'Text too large. Maximum size is 500KB.' },
+                { status: 413 }
+            );
+        }
+
         const languageName = LANGUAGE_NAMES[targetLanguage] || targetLanguage;
 
         const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });

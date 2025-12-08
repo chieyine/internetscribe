@@ -1,14 +1,12 @@
 import { useEffect, useCallback } from 'react';
 
 interface KeyboardShortcuts {
-    onTogglePlay?: () => void;
     onCopy?: () => void;
     onSearch?: () => void;
     onReset?: () => void;
 }
 
 export function useKeyboardShortcuts({
-    onTogglePlay,
     onCopy,
     onSearch,
     onReset,
@@ -23,13 +21,6 @@ export function useKeyboardShortcuts({
         const isMod = e.metaKey || e.ctrlKey;
 
         switch (e.key) {
-            case ' ':
-                // Space = play/pause (only if not in input)
-                if (!(e.target instanceof HTMLInputElement)) {
-                    e.preventDefault();
-                    onTogglePlay?.();
-                }
-                break;
             case 'c':
                 // Cmd/Ctrl + C = copy (let browser handle if text selected)
                 if (isMod && !window.getSelection()?.toString()) {
@@ -49,7 +40,7 @@ export function useKeyboardShortcuts({
                 onReset?.();
                 break;
         }
-    }, [onTogglePlay, onCopy, onSearch, onReset]);
+    }, [onCopy, onSearch, onReset]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);

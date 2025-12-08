@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 Something went wrong
               </h1>
               <p className="text-muted-foreground">
-                An unexpected error occurred. Your audio was not sent anywhere and remains private.
+                An unexpected error occurred. Please try again.
               </p>
             </div>
 

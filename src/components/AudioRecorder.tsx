@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Square, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useToast } from './Toast';
 
 interface AudioRecorderProps {
     onRecordingComplete: (audioBlob: Blob) => void;
@@ -10,6 +11,7 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
     const [isRecording, setIsRecording] = useState(false);
     const [duration, setDuration] = useState(0);
     const [isProcessing, setIsProcessing] = useState(false);
+    const { addToast } = useToast();
     
     const mediaRecorder = useRef<MediaRecorder | null>(null);
     const chunks = useRef<Blob[]>([]);
@@ -61,7 +63,7 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
 
         } catch (err) {
             console.error("Error accessing microphone:", err);
-            alert("Could not access microphone. Please ensure permission is granted.");
+            addToast("Could not access microphone. Please ensure permission is granted.", "error");
         }
     };
 

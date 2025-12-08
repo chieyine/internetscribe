@@ -2,12 +2,15 @@ import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileAudio } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from './Toast';
 
 interface FileDropzoneProps {
     onFilesAdded: (files: File[]) => void;
 }
 
 export default function FileDropzone({ onFilesAdded }: FileDropzoneProps) {
+    const { addToast } = useToast();
+    
     const onDrop = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
             onFilesAdded(acceptedFiles);
@@ -20,7 +23,12 @@ export default function FileDropzone({ onFilesAdded }: FileDropzoneProps) {
             'audio/*': [],
             'video/*': [] 
         },
-        // Remove maxFiles restriction to allow batch
+        maxSize: 100 * 1024 * 1024, // 100MB limit (M1)
+        onDropRejected: (rejections) => {
+            if (rejections.some(r => r.errors.some(e => e.code === 'file-too-large'))) {
+                addToast('File too large. Maximum size is 100MB.', 'error');
+            }
+        },
     });
 
     return (

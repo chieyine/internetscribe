@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useTranscriber, TranscriptionOptions } from "@/hooks/useTranscriber";
+import { useTranscriber, TranscriptionOptions, QueueItem } from "@/hooks/useTranscriber";
 import ThemeToggle from "@/components/ThemeToggle";
 import { AnimatePresence, motion } from "framer-motion";
 import { 
-    Sparkles, Loader2, AlertCircle, X, BookOpen, Upload, Mic as MicIcon,
-    Youtube, Briefcase, GraduationCap, MessageCircle, Podcast, Mic, Video,
+    Sparkles, AlertCircle, X, BookOpen, Upload, Mic as MicIcon,
+    Youtube, Briefcase, GraduationCap, MessageCircle, Podcast, Mic,
     ArrowRight, Zap, Globe, FileText
 } from "lucide-react";
 
@@ -98,11 +98,9 @@ const LANGUAGES = [
 export default function Home() {
   const { 
     isBusy, 
-    progressItems, 
     output, 
     language,
     setLanguage,
-    options,
     setOptions,
     start, 
     addQueueItems,
@@ -115,6 +113,17 @@ export default function Home() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
   const [inputMode, setInputMode] = useState<'upload' | 'record'>('upload');
   const [hasStarted, setHasStarted] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
+
+  // Calculate which output to display
+  const selectedItem = queue.find(item => item.id === selectedItemId);
+  const displayOutput = selectedItem?.output || output;
+
+  const handleSelectQueueItem = (item: QueueItem) => {
+    if (item.output) {
+      setSelectedItemId(item.id);
+    }
+  };
 
   // Auto-dismiss error
   useEffect(() => {
@@ -135,7 +144,7 @@ export default function Home() {
   };
 
   const handleRecordingComplete = (audioBlob: Blob) => {
-    const file = new File([audioBlob], 'recording.wav', { type: 'audio/wav' });
+    const file = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
     start(file);
     setHasStarted(true);
   };
@@ -168,10 +177,19 @@ export default function Home() {
             </div>
           </div>
 
+          {queue.length > 1 && (
+            <div className="mb-6">
+              <QueueList 
+                queue={queue} 
+                onSelectItem={handleSelectQueueItem}
+                selectedId={selectedItemId}
+              />
+            </div>
+          )}
+
           <TranscriptionView
             isBusy={isBusy}
-            progressItems={progressItems}
-            output={output}
+            output={displayOutput}
             onReset={handleReset}
             uploadProgress={uploadProgress}
           />

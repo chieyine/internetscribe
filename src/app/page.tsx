@@ -23,7 +23,7 @@ const TranscriptionView = dynamic(() => import("@/components/TranscriptionView")
 });
 const AudioRecorder = dynamic(() => import("@/components/AudioRecorder"), { ssr: false });
 const QueueList = dynamic(() => import("@/components/QueueList"), { ssr: false });
-const InstallPrompt = dynamic(() => import("@/components/InstallPrompt"), { ssr: false });
+
 
 interface Workflow {
     id: string;
@@ -194,7 +194,6 @@ export default function Home() {
             uploadProgress={uploadProgress}
           />
         </div>
-        <InstallPrompt />
       </div>
     );
   }
@@ -229,10 +228,12 @@ export default function Home() {
         {/* Header */}
         <header className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <span className="text-xl font-bold">InternetScribe</span>
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <div className="p-2 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <span className="text-xl font-bold">InternetScribe</span>
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/blog" className="p-2 text-white/60 hover:text-white transition-colors">
@@ -412,8 +413,6 @@ export default function Home() {
           )}
         </AnimatePresence>
       </div>
-
-      <InstallPrompt />
     </div>
   );
 }

@@ -4,22 +4,41 @@ import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transfo
 env.allowLocalModels = false;
 env.useBrowserCache = true; // Enable caching to avoid re-downloading models
 
-// WebGPU detection
+// WebGPU detection with robust fallback
 let device = 'wasm'; // Default to CPU/WASM
 
 async function detectWebGPU() {
     try {
         if (typeof navigator !== 'undefined' && navigator.gpu) {
-            const adapter = await navigator.gpu.requestAdapter();
+            // Try high-performance first, then fall back to low-power (integrated GPU)
+            let adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+            if (!adapter) {
+                adapter = await navigator.gpu.requestAdapter({ powerPreference: 'low-power' });
+            }
+            if (!adapter) {
+                adapter = await navigator.gpu.requestAdapter();
+            }
+            
             if (adapter) {
-                device = 'webgpu';
-                console.log('[InternetScribe] WebGPU detected - GPU acceleration enabled! 🚀');
-                return true;
+                // Actually request the device to verify it works
+                try {
+                    const gpuDevice = await adapter.requestDevice();
+                    if (gpuDevice) {
+                        device = 'webgpu';
+                        console.log('[InternetScribe] WebGPU verified - GPU acceleration enabled! 🚀');
+                        gpuDevice.destroy(); // Clean up test device
+                        return true;
+                    }
+                } catch (deviceError) {
+                    console.warn('[InternetScribe] GPU device request failed:', deviceError.message);
+                    return false;
+                }
             }
         }
-    } catch {
-        console.log('[InternetScribe] WebGPU not available, using CPU');
+    } catch (e) {
+        console.log('[InternetScribe] WebGPU not available, using CPU:', e.message);
     }
+    console.log('[InternetScribe] Using CPU (WASM) for transcription');
     return false;
 }
 

@@ -17,7 +17,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "InternetScribe - Free Offline Audio Transcription",
   description: "Transcribe audio to text for free, privately in your browser. No uploads, no servers. Powered by Moonshine AI. Supports MP3, WAV, M4A. Export to TXT, JSON, VTT subtitles.",
-  keywords: ["audio transcription", "speech to text", "whisper ai", "offline transcription", "free transcription", "audio to text", "voice to text", "transcribe audio"],
+  keywords: ["audio transcription", "speech to text", "moonshine ai", "offline transcription", "free transcription", "audio to text", "voice to text", "transcribe audio"],
   authors: [{ name: "InternetScribe" }],
   manifest: "/manifest.json",
   openGraph: {

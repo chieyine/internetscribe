@@ -1,9 +1,9 @@
 // Audio processing configuration constants
-// These values are used consistently across the application for Whisper AI compatibility
+// These values are used consistently across the application for Moonshine AI compatibility
 
 /**
  * Sample rate for audio processing (16kHz)
- * Whisper AI models expect 16kHz audio input
+ * Moonshine AI models expect 16kHz audio input
  */
 export const AUDIO_SAMPLE_RATE = 16000;
 

@@ -178,7 +178,7 @@ export default function BlogIndex() {
           <div className="inline-flex flex-col items-center p-8 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
             <h2 className="text-2xl font-bold mb-2">Ready to Transcribe?</h2>
             <p className="text-muted-foreground mb-6 max-w-md">
-              Try InternetScribe for free. Fast, accurate AI transcription powered by Google Gemini.
+              Try InternetScribe for free. Fast, accurate AI transcription in seconds.
             </p>
             <Link 
               href="/"

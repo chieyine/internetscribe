@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     default: "InternetScribe - Free AI Audio Transcription",
     template: "%s | InternetScribe",
   },
-  description: "Transcribe audio to text for free with Google Gemini AI. Fast, accurate transcription in seconds. Supports MP3, WAV, M4A. Export to TXT, JSON, VTT subtitles.",
-  keywords: ["audio transcription", "speech to text", "gemini ai", "transcription", "free transcription", "audio to text", "voice to text", "transcribe audio", "ai transcription", "convert audio to text"],
+  description: "Free AI audio transcription tool. Convert speech to text in seconds with InternetScribe. Supports MP3, WAV, M4A and more. Export to TXT, JSON, VTT subtitles.",
+  keywords: ["internetscribe", "audio transcription", "speech to text", "free transcription", "audio to text", "voice to text", "transcribe audio", "ai transcription", "convert audio to text", "transcription tool"],
   authors: [{ name: "InternetScribe" }],
   creator: "InternetScribe",
   publisher: "InternetScribe",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "InternetScribe - Free AI Audio Transcription",
-    description: "Transcribe audio to text for free with Google Gemini AI. Fast, accurate, multi-language support.",
+    description: "Free AI audio transcription. Convert speech to text in seconds. Multi-language support, batch processing, and multiple export formats.",
     url: "https://internetscribe.com",
     siteName: "InternetScribe",
     type: "website",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "InternetScribe - Free AI Audio Transcription",
-    description: "Transcribe audio to text for free with Google Gemini AI. Fast, accurate transcription.",
+    description: "Free AI audio transcription. Convert speech to text in seconds with InternetScribe.",
     creator: "@internetscribe",
   },
   appleWebApp: {
@@ -105,7 +105,7 @@ export default function RootLayout({
                     "price": "0",
                     "priceCurrency": "USD"
                   },
-                  "description": "Free audio transcription tool powered by Google Gemini AI. Supports multiple languages and export formats.",
+                  "description": "Free AI audio transcription tool by InternetScribe. Convert speech to text instantly with support for multiple languages and export formats.",
                   "featureList": "AI Transcription, Multi-language support, AI Summarization, Translation, Batch processing, Export to TXT/JSON/VTT/SRT",
                   "aggregateRating": {
                     "@type": "AggregateRating",
@@ -127,10 +127,10 @@ export default function RootLayout({
                     },
                     {
                       "@type": "Question",
-                      "name": "How does the transcription work?",
+                      "name": "How does InternetScribe work?",
                       "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Your audio is securely processed using Google Gemini AI for fast, accurate transcription. We support MP3, WAV, M4A, OGG, FLAC, and WEBM formats."
+                        "text": "InternetScribe uses advanced AI to transcribe your audio files quickly and accurately. Simply upload your MP3, WAV, M4A, OGG, FLAC, or WEBM file and get your transcript in seconds."
                       }
                     },
                     {

@@ -197,7 +197,7 @@ export default async function Post({ params }: Props) {
           <div className="bg-gradient-to-br from-foreground to-foreground/90 text-background p-8 rounded-2xl">
             <h3 className="text-2xl font-bold mb-2">Try InternetScribe for Free</h3>
             <p className="text-background/80 mb-6">
-              Ready to transcribe your own audio? Fast, accurate AI transcription powered by Google Gemini.
+              Ready to transcribe your own audio? Fast, accurate AI transcription with InternetScribe.
             </p>
             <Link 
               href="/"

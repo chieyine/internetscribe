@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Globe, Info, Users, Clock, Sparkles, FileText } from 'lucide-react';
+import { Globe, Info, Users, Clock, Sparkles, FileText, Briefcase, GraduationCap, Youtube, MessageCircle, Mic, Video, Podcast } from 'lucide-react';
 
 const LANGUAGES = [
     { code: 'auto', name: 'Auto-detect' },
@@ -26,6 +26,109 @@ export interface TranscriptionOptions {
     meetingNotes: boolean;
 }
 
+interface Workflow {
+    id: string;
+    name: string;
+    icon: React.ElementType;
+    description: string;
+    color: string;
+    options: TranscriptionOptions;
+}
+
+const WORKFLOWS: Workflow[] = [
+    {
+        id: 'youtuber',
+        name: 'YouTuber',
+        icon: Youtube,
+        description: 'Captions & subtitles with timestamps',
+        color: 'text-red-500',
+        options: {
+            identifySpeakers: false,
+            removeFillers: true,
+            addTimestamps: true,
+            meetingNotes: false,
+        },
+    },
+    {
+        id: 'corporate',
+        name: 'Corporate',
+        icon: Briefcase,
+        description: 'Meeting notes with action items',
+        color: 'text-blue-500',
+        options: {
+            identifySpeakers: true,
+            removeFillers: true,
+            addTimestamps: false,
+            meetingNotes: true,
+        },
+    },
+    {
+        id: 'student',
+        name: 'Student',
+        icon: GraduationCap,
+        description: 'Lecture notes with key points',
+        color: 'text-green-500',
+        options: {
+            identifySpeakers: false,
+            removeFillers: true,
+            addTimestamps: true,
+            meetingNotes: true,
+        },
+    },
+    {
+        id: 'whatsapp',
+        name: 'WhatsApp',
+        icon: MessageCircle,
+        description: 'Clean voice message transcription',
+        color: 'text-emerald-500',
+        options: {
+            identifySpeakers: false,
+            removeFillers: true,
+            addTimestamps: false,
+            meetingNotes: false,
+        },
+    },
+    {
+        id: 'podcast',
+        name: 'Podcast',
+        icon: Podcast,
+        description: 'Multi-speaker with timestamps',
+        color: 'text-purple-500',
+        options: {
+            identifySpeakers: true,
+            removeFillers: false,
+            addTimestamps: true,
+            meetingNotes: false,
+        },
+    },
+    {
+        id: 'interview',
+        name: 'Interview',
+        icon: Mic,
+        description: 'Speaker labels, clean transcript',
+        color: 'text-orange-500',
+        options: {
+            identifySpeakers: true,
+            removeFillers: true,
+            addTimestamps: false,
+            meetingNotes: false,
+        },
+    },
+    {
+        id: 'video',
+        name: 'Video Edit',
+        icon: Video,
+        description: 'Timestamps for video editing',
+        color: 'text-pink-500',
+        options: {
+            identifySpeakers: false,
+            removeFillers: false,
+            addTimestamps: true,
+            meetingNotes: false,
+        },
+    },
+];
+
 interface SettingsProps {
     language: string;
     setLanguage: (language: string) => void;
@@ -48,7 +151,7 @@ function ToggleOption({
 }) {
     return (
         <label className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors">
-            <div className="flex-shrink-0 mt-0.5">
+            <div className="shrink-0 mt-0.5">
                 <input
                     type="checkbox"
                     checked={checked}
@@ -72,12 +175,57 @@ export default function Settings({ language, setLanguage, options, setOptions }:
         setOptions({ ...options, [key]: value });
     };
 
+    const applyWorkflow = (workflow: Workflow) => {
+        setOptions(workflow.options);
+    };
+
+    // Find currently matching workflow
+    const currentWorkflow = WORKFLOWS.find(w => 
+        w.options.identifySpeakers === options.identifySpeakers &&
+        w.options.removeFillers === options.removeFillers &&
+        w.options.addTimestamps === options.addTimestamps &&
+        w.options.meetingNotes === options.meetingNotes
+    );
+
     return (
         <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 p-6 bg-muted/30 rounded-xl border border-border space-y-6"
         >
+            {/* Workflow Presets */}
+            <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <Sparkles className="w-4 h-4" />
+                    Quick Workflows
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {WORKFLOWS.map((workflow) => {
+                        const Icon = workflow.icon;
+                        const isActive = currentWorkflow?.id === workflow.id;
+                        return (
+                            <button
+                                key={workflow.id}
+                                onClick={() => applyWorkflow(workflow)}
+                                className={`p-3 rounded-lg text-left transition-all ${
+                                    isActive 
+                                        ? 'bg-foreground text-background shadow-lg scale-[1.02]' 
+                                        : 'bg-muted/50 hover:bg-muted hover:scale-[1.01]'
+                                }`}
+                            >
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Icon className={`w-4 h-4 ${isActive ? '' : workflow.color}`} />
+                                    <span className="text-sm font-medium">{workflow.name}</span>
+                                </div>
+                                <p className={`text-xs ${isActive ? 'text-background/70' : 'text-muted-foreground'}`}>
+                                    {workflow.description}
+                                </p>
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
             {/* Language Selection */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2 text-sm font-medium">
@@ -101,11 +249,11 @@ export default function Settings({ language, setLanguage, options, setOptions }:
                 </div>
             </div>
 
-            {/* Transcription Options */}
+            {/* Fine-tune Options */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2 text-sm font-medium">
-                    <Sparkles className="w-4 h-4" />
-                    Transcription Options
+                    <FileText className="w-4 h-4" />
+                    Fine-tune Options
                 </div>
                 <div className="grid sm:grid-cols-2 gap-2">
                     <ToggleOption

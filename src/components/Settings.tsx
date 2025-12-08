@@ -31,8 +31,10 @@ const LANGUAGES = [
 ];
 
 const MODELS = [
-    { id: 'onnx-community/moonshine-tiny-ONNX', name: 'Moonshine Tiny', size: '~15MB', quality: 3, speed: 'Ultra Fast', desc: 'Real-time transcription', downloadTime: '~5 sec' },
-    { id: 'onnx-community/moonshine-base-ONNX', name: 'Moonshine Base', size: '~60MB', quality: 4, speed: 'Super Fast', desc: 'Best accuracy', downloadTime: '~20 sec' },
+    { id: 'Xenova/whisper-tiny.en', name: 'Tiny English', size: '~40MB', quality: 2, speed: 'Fastest', desc: 'Best for quick English transcription', downloadTime: '~15 sec' },
+    { id: 'Xenova/whisper-tiny', name: 'Tiny Multilingual', size: '~40MB', quality: 2, speed: 'Very Fast', desc: 'Fast, supports all languages', downloadTime: '~15 sec' },
+    { id: 'Xenova/whisper-base.en', name: 'Base English', size: '~75MB', quality: 3, speed: 'Fast', desc: 'Better quality English', downloadTime: '~30 sec' },
+    { id: 'Xenova/whisper-small.en', name: 'Small English', size: '~250MB', quality: 4, speed: 'Good', desc: 'Best accuracy', downloadTime: '~1 min' },
 ];
 
 function QualityStars({ count }: { count: number }) {
@@ -174,16 +176,16 @@ export default function Settings({
                 <div className="border-t border-border pt-4">
                     <div className="flex items-center gap-2 text-sm font-medium mb-3">
                         <Info className="w-4 h-4" />
-                        Moonshine Models
+                        Model Guide
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                         <div className="bg-green-500/10 rounded-lg p-2 border border-green-500/20">
-                            <div className="font-medium text-green-600 dark:text-green-400">⚡ Tiny</div>
-                            <div className="text-muted-foreground">15MB, real-time</div>
+                            <div className="font-medium text-green-600 dark:text-green-400">⚡ Fastest</div>
+                            <div className="text-muted-foreground">Tiny English</div>
                         </div>
                         <div className="bg-muted/30 rounded-lg p-2">
-                            <div className="font-medium">Base</div>
-                            <div className="text-muted-foreground">60MB, best quality</div>
+                            <div className="font-medium">Best Quality</div>
+                            <div className="text-muted-foreground">Small English</div>
                         </div>
                     </div>
                 </div>

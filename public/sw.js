@@ -1,6 +1,6 @@
 // Service Worker for InternetScribe PWA
 // CACHE_VERSION: Increment when deploying new versions to bust cache (e.g., v2, v3)
-const CACHE_VERSION = 'v11';
+const CACHE_VERSION = 'v12';
 const CACHE_NAME = `internetscribe-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/',

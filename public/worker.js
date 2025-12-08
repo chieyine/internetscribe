@@ -47,11 +47,11 @@ const webgpuPromise = detectWebGPU();
 
 class PipelineSingleton {
     static task = 'automatic-speech-recognition';
-    static model = 'onnx-community/moonshine-tiny-ONNX';
+    static model = 'Xenova/whisper-tiny.en';
     static instance = null;
     static currentDevice = null;
 
-    static async getInstance(progress_callback = null, model = 'onnx-community/moonshine-tiny-ONNX') {
+    static async getInstance(progress_callback = null, model = 'Xenova/whisper-tiny.en') {
         // Wait for WebGPU detection to complete
         await webgpuPromise;
         

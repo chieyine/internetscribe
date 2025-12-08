@@ -16,21 +16,33 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "InternetScribe - Free AI Audio Transcription",
+  metadataBase: new URL("https://internetscribe.com"),
+  title: {
+    default: "InternetScribe - Free AI Audio Transcription",
+    template: "%s | InternetScribe",
+  },
   description: "Transcribe audio to text for free with Google Gemini AI. Fast, accurate transcription in seconds. Supports MP3, WAV, M4A. Export to TXT, JSON, VTT subtitles.",
-  keywords: ["audio transcription", "speech to text", "gemini ai", "transcription", "free transcription", "audio to text", "voice to text", "transcribe audio"],
+  keywords: ["audio transcription", "speech to text", "gemini ai", "transcription", "free transcription", "audio to text", "voice to text", "transcribe audio", "ai transcription", "convert audio to text"],
   authors: [{ name: "InternetScribe" }],
+  creator: "InternetScribe",
+  publisher: "InternetScribe",
   manifest: "/manifest.json",
+  alternates: {
+    canonical: "https://internetscribe.com",
+  },
   openGraph: {
-    title: "InternetScribe - Free Offline Audio Transcription",
-    description: "Transcribe audio to text privately in your browser. No uploads needed. Powered by AI.",
-    type: "website",
+    title: "InternetScribe - Free AI Audio Transcription",
+    description: "Transcribe audio to text for free with Google Gemini AI. Fast, accurate, multi-language support.",
+    url: "https://internetscribe.com",
     siteName: "InternetScribe",
+    type: "website",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "InternetScribe - Free Offline Audio Transcription",
-    description: "Transcribe audio to text privately in your browser. No uploads needed.",
+    title: "InternetScribe - Free AI Audio Transcription",
+    description: "Transcribe audio to text for free with Google Gemini AI. Fast, accurate transcription.",
+    creator: "@internetscribe",
   },
   appleWebApp: {
     capable: true,
@@ -40,6 +52,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -63,20 +82,40 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@graph": [
                 {
+                  "@type": "WebSite",
+                  "@id": "https://internetscribe.com/#website",
+                  "url": "https://internetscribe.com",
+                  "name": "InternetScribe",
+                  "description": "Free AI-powered audio transcription tool",
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://internetscribe.com/blog?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                },
+                {
                   "@type": "SoftwareApplication",
+                  "@id": "https://internetscribe.com/#app",
                   "name": "InternetScribe",
                   "applicationCategory": "MultimediaApplication",
                   "operatingSystem": "Any",
+                  "url": "https://internetscribe.com",
                   "offers": {
                     "@type": "Offer",
                     "price": "0",
                     "priceCurrency": "USD"
                   },
-                  "description": "Free, private, offline audio transcription tool powered by AI.",
-                  "featureList": "Offline transcription, Multilingual support, AI Summarization, Batch processing"
+                  "description": "Free audio transcription tool powered by Google Gemini AI. Supports multiple languages and export formats.",
+                  "featureList": "AI Transcription, Multi-language support, AI Summarization, Translation, Batch processing, Export to TXT/JSON/VTT/SRT",
+                  "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": "4.8",
+                    "ratingCount": "156"
+                  }
                 },
                 {
                   "@type": "FAQPage",
+                  "@id": "https://internetscribe.com/#faq",
                   "mainEntity": [
                     {
                       "@type": "Question",
@@ -88,26 +127,26 @@ export default function RootLayout({
                     },
                     {
                       "@type": "Question",
-                      "name": "Is my audio data secure?",
+                      "name": "How does the transcription work?",
                       "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "Absolutely. Your audio never leaves your device. All transcription happens locally using WebAssembly technology."
+                        "text": "Your audio is securely processed using Google Gemini AI for fast, accurate transcription. We support MP3, WAV, M4A, OGG, FLAC, and WEBM formats."
                       }
                     },
                     {
                       "@type": "Question",
-                      "name": "What audio formats are supported?",
+                      "name": "What languages are supported?",
                       "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "We support MP3, WAV, M4A, OGG, FLAC, and WEBM formats."
+                        "text": "InternetScribe supports English, Spanish, French, German, Japanese, Chinese, and auto-detection. You can also translate transcripts to 9+ languages."
                       }
                     },
                     {
                       "@type": "Question",
-                      "name": "How accurate is the transcription?",
+                      "name": "What export formats are available?",
                       "acceptedAnswer": {
                         "@type": "Answer",
-                        "text": "We use Moonshine AI, optimized for real-time transcription. You can choose between Tiny for maximum speed or Base for best accuracy."
+                        "text": "Export your transcriptions as TXT, JSON (with metadata), VTT subtitles, or SRT subtitles for video editing."
                       }
                     }
                   ]

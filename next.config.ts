@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' blob: data:",
               "media-src 'self' blob:",
               "connect-src 'self' https://cdn.jsdelivr.net https://huggingface.co https://*.hf.space blob:",
-              "worker-src 'self' blob:",
+              "worker-src 'self' blob: https://cdn.jsdelivr.net",
             ].join('; ')
           },
           { key: 'X-Content-Type-Options', value: 'nosniff' },

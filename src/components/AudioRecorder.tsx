@@ -1,14 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Square, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { AUDIO_SAMPLE_RATE } from '../lib/constants';
 
 interface AudioRecorderProps {
-    onRecordingComplete: (audioData: Float32Array) => void;
-    onStreamData?: (audioData: Float32Array) => void;
+    onRecordingComplete: (audioBlob: Blob) => void;
 }
 
-export default function AudioRecorder({ onRecordingComplete, onStreamData }: AudioRecorderProps) {
+export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProps) {
     const [isRecording, setIsRecording] = useState(false);
     const [duration, setDuration] = useState(0);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -16,74 +14,50 @@ export default function AudioRecorder({ onRecordingComplete, onStreamData }: Aud
     const mediaRecorder = useRef<MediaRecorder | null>(null);
     const chunks = useRef<Blob[]>([]);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-    const streamIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
 
-    // Cleanup timer on unmount
     useEffect(() => {
         return () => {
             if (timerRef.current) {
                 clearInterval(timerRef.current);
             }
-            if (streamIntervalRef.current) {
-                clearInterval(streamIntervalRef.current);
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
             }
         };
     }, []);
 
-    const processAudioBlob = async (blob: Blob): Promise<Float32Array> => {
-        const arrayBuffer = await blob.arrayBuffer();
-        const audioContext = new AudioContext({ sampleRate: AUDIO_SAMPLE_RATE });
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        return audioBuffer.getChannelData(0);
-    };
-
     const startRecording = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            streamRef.current = stream;
             mediaRecorder.current = new MediaRecorder(stream);
             chunks.current = [];
 
-            mediaRecorder.current.ondataavailable = async (e) => {
+            mediaRecorder.current.ondataavailable = (e) => {
                 if (e.data.size > 0) {
                     chunks.current.push(e.data);
                 }
             };
 
-            mediaRecorder.current.onstop = async () => {
+            mediaRecorder.current.onstop = () => {
                 setIsProcessing(true);
-                if (streamIntervalRef.current) {
-                    clearInterval(streamIntervalRef.current);
-                }
-
                 const blob = new Blob(chunks.current, { type: 'audio/webm' });
-                const audioData = await processAudioBlob(blob);
-                
-                onRecordingComplete(audioData);
+                onRecordingComplete(blob);
                 setIsProcessing(false);
                 
-                // Stop all tracks
-                stream.getTracks().forEach(track => track.stop());
+                if (streamRef.current) {
+                    streamRef.current.getTracks().forEach(track => track.stop());
+                }
             };
 
-            mediaRecorder.current.start(1000); // Request data every second
+            mediaRecorder.current.start(1000);
             setIsRecording(true);
             
-            // Start timer
             const startTime = Date.now();
             timerRef.current = setInterval(() => {
                 setDuration(Math.floor((Date.now() - startTime) / 1000));
             }, 1000);
-
-            // Stream data if callback provided
-            if (onStreamData) {
-                streamIntervalRef.current = setInterval(async () => {
-                    if (chunks.current.length > 0) {
-                        const blob = new Blob(chunks.current, { type: 'audio/webm' });
-                        const audioData = await processAudioBlob(blob);
-                        onStreamData(audioData);
-                    }
-                }, 2000); // Update every 2 seconds
-            }
 
         } catch (err) {
             console.error("Error accessing microphone:", err);
@@ -97,9 +71,6 @@ export default function AudioRecorder({ onRecordingComplete, onStreamData }: Aud
             setIsRecording(false);
             if (timerRef.current) {
                 clearInterval(timerRef.current);
-            }
-            if (streamIntervalRef.current) {
-                clearInterval(streamIntervalRef.current);
             }
             setDuration(0);
         }
@@ -135,7 +106,6 @@ export default function AudioRecorder({ onRecordingComplete, onStreamData }: Aud
                     <Mic className="w-8 h-8" />
                 )}
                 
-                {/* Recording Pulse Ring */}
                 {isRecording && (
                     <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping" />
                 )}

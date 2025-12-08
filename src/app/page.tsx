@@ -25,27 +25,17 @@ const InstallPrompt = dynamic(() => import("@/components/InstallPrompt"), { ssr:
 export default function Home() {
   const { 
     isBusy, 
-    isModelLoading, 
     progressItems, 
     output, 
-    model, 
-    setModel, 
     language,
     setLanguage,
-    task,
-    setTask,
     start, 
-    stream, 
     estimatedTime, 
-    audioData,
-    isSummarizing,
-    summary,
-    summarize,
     addQueueItems,
     queue,
     lastError,
     clearLastError,
-    isGPU
+    uploadProgress
   } = useTranscriber();
   
   const [hasAudio, setHasAudio] = useState(false);
@@ -65,8 +55,9 @@ export default function Home() {
     setHasAudio(true);
   };
 
-  const handleRecordingComplete = (audio: Float32Array) => {
-    start(audio);
+  const handleRecordingComplete = (audioBlob: Blob) => {
+    const file = new File([audioBlob], 'recording.wav', { type: 'audio/wav' });
+    start(file);
     setHasAudio(true);
   };
 
@@ -98,8 +89,8 @@ export default function Home() {
             </h1>
           </div>
           <p className="text-lg text-muted-foreground max-w-[600px] leading-relaxed">
-            Transform your audio and video into text with <span className="text-foreground font-medium">private, local AI</span>. 
-            No data leaves your device.
+            Transform your audio and video into text with <span className="text-foreground font-medium">fast AI transcription</span>. 
+            Powered by Google Gemini.
           </p>
         </header>
 
@@ -131,12 +122,8 @@ export default function Home() {
                             className="overflow-hidden"
                         >
                             <Settings 
-                                model={model}
-                                setModel={setModel}
                                 language={language} 
                                 setLanguage={setLanguage}
-                                task={task}
-                                setTask={setTask}
                             />
                         </motion.div>
                     )}
@@ -168,8 +155,7 @@ export default function Home() {
                   <div className="flex flex-col gap-8">
                     <div className="border-2 border-dashed border-border rounded-xl p-12 flex flex-col items-center justify-center bg-card/30 min-h-[300px]">
                       <AudioRecorder 
-                        onRecordingComplete={handleRecordingComplete} 
-                        onStreamData={stream}
+                        onRecordingComplete={handleRecordingComplete}
                       />
                     </div>
                     
@@ -181,16 +167,10 @@ export default function Home() {
             ) : (
               <TranscriptionView
                 isBusy={isBusy}
-                isModelLoading={isModelLoading}
                 progressItems={progressItems}
                 output={output}
                 onReset={handleReset}
-                estimatedTime={estimatedTime}
-                audioData={audioData}
-                isSummarizing={isSummarizing}
-                summary={summary}
-                onSummarize={summarize}
-                isGPU={isGPU}
+                uploadProgress={uploadProgress}
               />
             )}
           </div>
@@ -205,8 +185,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <h3 className="font-semibold text-lg">100% Private</h3>
-              <p className="text-sm text-muted-foreground">Your audio never leaves your device. All processing happens locally in your browser using WebAssembly.</p>
+              <h3 className="font-semibold text-lg">Fast & Accurate</h3>
+              <p className="text-sm text-muted-foreground">Powered by Google Gemini AI. Get accurate transcriptions in seconds, not minutes.</p>
             </div>
             <div className="space-y-3 p-6 rounded-xl bg-muted/30">
               <div className="w-10 h-10 rounded-lg bg-foreground/10 flex items-center justify-center">
@@ -214,8 +194,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="font-semibold text-lg">Fast & Free</h3>
-              <p className="text-sm text-muted-foreground">Powered by Moonshine AI. No sign-up required. Completely free to use.</p>
+              <h3 className="font-semibold text-lg">Free to Use</h3>
+              <p className="text-sm text-muted-foreground">No sign-up, no credit card. Just upload your audio and get results instantly.</p>
             </div>
             <div className="space-y-3 p-6 rounded-xl bg-muted/30">
               <div className="w-10 h-10 rounded-lg bg-foreground/10 flex items-center justify-center">

@@ -42,7 +42,7 @@ export default function BlogIndex() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-muted/50 to-background">
+      <div className="bg-linear-to-b from-muted/50 to-background">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -175,7 +175,7 @@ export default function BlogIndex() {
 
         {/* CTA Section */}
         <section className="mt-16 text-center">
-          <div className="inline-flex flex-col items-center p-8 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
+          <div className="inline-flex flex-col items-center p-8 rounded-2xl bg-linear-to-br from-primary/5 to-primary/10 border border-primary/20">
             <h2 className="text-2xl font-bold mb-2">Ready to Transcribe?</h2>
             <p className="text-muted-foreground mb-6 max-w-md">
               Try InternetScribe for free. Fast, accurate AI transcription in seconds.

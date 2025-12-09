@@ -3,6 +3,11 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import remarkGfm from 'remark-gfm';
+
+// ... (rest of the file)
+
+
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
@@ -106,6 +111,7 @@ export async function getPostData(id: string): Promise<PostData | null> {
     // Use remark to convert markdown into HTML string
     const processedContent = await remark()
       .use(html)
+      .use(remarkGfm)
       .process(matterResult.content);
     
     // Add ids to headings in HTML so TOC links work

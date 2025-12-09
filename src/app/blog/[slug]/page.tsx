@@ -1,10 +1,9 @@
-import { getAllPostIds, getPostData, getSortedPostsData } from '@/lib/blog';
+import { getAllPostIds, getPostData } from '@/lib/blog';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import ShareButton from '@/components/ShareButton';
-import TableOfContents from '@/components/TableOfContents';
 import ReadingProgress from '@/components/ReadingProgress';
 
 type Props = {
@@ -70,12 +69,6 @@ export default async function Post({ params }: Props) {
     notFound();
   }
 
-  // Get related posts (same category or recent)
-  const allPosts = getSortedPostsData();
-  const relatedPosts = allPosts
-    .filter(post => post.id !== slug)
-    .slice(0, 3);
-
   const readTime = getReadingTime(postData.contentHtml || '');
 
   // JSON-LD for article
@@ -112,161 +105,122 @@ export default async function Post({ params }: Props) {
       <ReadingProgress />
 
       <div className="min-h-screen bg-background text-foreground selection:bg-foreground/10">
-        {/* Header */}
-        <div className="border-b border-border/40 bg-background/50 backdrop-blur-sm">
-          <div className="max-w-[1200px] mx-auto px-6 py-12 md:py-16">
-            <div className="max-w-3xl mx-auto text-center space-y-8">
-              {/* Breadcrumbs */}
-              <nav className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground/60" aria-label="Breadcrumb">
-                <Link href="/blog" className="hover:text-foreground transition-colors">Blog</Link>
-                <ChevronRight className="w-3 h-3" />
-                <span className="text-foreground/80 truncate max-w-[200px]">{postData.category || 'Article'}</span>
-              </nav>
-
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-                {postData.title}
-              </h1>
-              
-              <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                {postData.description}
-              </p>
-              
-              <div className="flex items-center justify-center gap-6 text-sm font-medium text-muted-foreground pt-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-foreground/10 flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 text-foreground" />
-                  </div>
-                  <span className="text-foreground">InternetScribe Team</span>
-                </div>
-                <span className="w-1 h-1 rounded-full bg-border" />
-                <time dateTime={postData.date}>
-                  {new Date(postData.date).toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </time>
-                <span className="w-1 h-1 rounded-full bg-border" />
-                <span>{readTime}</span>
-              </div>
-            </div>
+        {/* Navigation Bar */}
+        <nav className="border-b border-border sticky top-0 bg-background/80 backdrop-blur-md z-40">
+          <div className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
+            <Link 
+              href="/blog" 
+              className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Blog
+            </Link>
+            <ShareButton title={postData.title} />
           </div>
-        </div>
+        </nav>
 
-        <div className="max-w-[1200px] mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <main className="max-w-3xl mx-auto px-6 py-12 md:py-20">
+          {/* Article Header */}
+          <header className="mb-12 text-center">
+            <div className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground mb-6">
+              <span className="text-primary bg-primary/5 px-3 py-1 rounded-full">
+                {postData.category || 'Article'}
+              </span>
+            </div>
+
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1] mb-6">
+              {postData.title}
+            </h1>
             
-            {/* Left Sidebar: Table of Contents */}
-            <aside className="hidden lg:block lg:col-span-3">
-              <div className="sticky top-24 max-h-[calc(100vh-6rem)] overflow-auto pr-4">
-                <div className="mb-6">
-                  <Link 
-                    href="/blog" 
-                    className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-8"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Blog
-                  </Link>
+            <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8">
+              {postData.description}
+            </p>
+            
+            <div className="flex items-center justify-center gap-6 text-sm font-medium text-muted-foreground border-t border-border pt-8 max-w-xl mx-auto">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-foreground" />
                 </div>
-                <TableOfContents headings={postData.headings || []} />
+                <span className="text-foreground">InternetScribe Team</span>
               </div>
-            </aside>
-
-            {/* Main Content */}
-            <main className="lg:col-span-7">
-              <article 
-                className="prose prose-zinc dark:prose-invert max-w-none
-                  prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-foreground
-                  prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:scroll-mt-24
-                  prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4 prose-h3:scroll-mt-24
-                  prose-p:text-muted-foreground prose-p:leading-7 prose-p:mb-6
-                  prose-a:text-foreground prose-a:font-medium prose-a:no-underline prose-a:border-b prose-a:border-foreground/20 hover:prose-a:border-foreground transition-all
-                  prose-strong:text-foreground prose-strong:font-semibold
-                  prose-ul:my-6 prose-ul:list-disc prose-ul:pl-6
-                  prose-li:text-muted-foreground prose-li:mb-2
-                  prose-code:text-foreground prose-code:bg-muted/50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
-                  prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl
-                  prose-blockquote:not-italic prose-blockquote:font-normal prose-blockquote:text-foreground prose-blockquote:bg-blue-50 dark:prose-blockquote:bg-blue-900/10 prose-blockquote:p-6 prose-blockquote:rounded-xl prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:shadow-sm
-                  prose-img:rounded-xl prose-img:shadow-lg prose-img:border prose-img:border-border/50
-                  prose-hr:border-border/50 prose-hr:my-12
-                  
-                  /* Custom Table Styling */
-                  prose-table:w-full prose-table:my-8 prose-table:border-collapse prose-table:text-sm
-                  prose-thead:bg-muted/30 prose-thead:border-b prose-thead:border-border
-                  prose-th:p-4 prose-th:text-left prose-th:font-semibold prose-th:text-foreground
-                  prose-td:p-4 prose-td:border-b prose-td:border-border/50 prose-td:text-muted-foreground
-                  prose-tr:hover:bg-muted/20 transition-colors"
-                dangerouslySetInnerHTML={{ __html: postData.contentHtml || '' }} 
-              />
-            </main>
-
-            {/* Right Sidebar: Share & CTA */}
-            <aside className="hidden lg:block lg:col-span-2">
-              <div className="sticky top-24 space-y-8">
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">Share</p>
-                  <ShareButton title={postData.title} />
-                </div>
-                
-                <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
-                  <h4 className="font-semibold text-sm mb-2">Try InternetScribe</h4>
-                  <p className="text-xs text-muted-foreground mb-4">Unlimited free transcription in your browser.</p>
-                  <Link 
-                    href="/"
-                    className="block w-full py-2 px-3 bg-foreground text-background text-center text-xs font-medium rounded-lg hover:bg-foreground/90 transition-colors"
-                  >
-                    Start Now
-                  </Link>
-                </div>
-              </div>
-            </aside>
-
-          </div>
-        </div>
-
-        {/* Mobile Bottom Bar (CTA) */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t border-border z-40">
-          <Link 
-            href="/"
-            className="flex items-center justify-center w-full py-3 bg-foreground text-background font-medium rounded-lg"
-          >
-            Start Transcribing Free
-          </Link>
-        </div>
-
-        {/* Related Posts */}
-        {relatedPosts.length > 0 && (
-          <section className="border-t border-border/40 bg-muted/10 py-20 mt-20">
-            <div className="max-w-[1200px] mx-auto px-6">
-              <h2 className="text-2xl font-bold mb-8 tracking-tight">Read Next</h2>
-              <div className="grid md:grid-cols-3 gap-8">
-                {relatedPosts.map(({ id, title, date }) => (
-                  <Link 
-                    key={id}
-                    href={`/blog/${id}`}
-                    className="group block"
-                  >
-                    <article className="h-full p-6 rounded-2xl bg-background border border-border/50 hover:border-foreground/20 transition-all hover:shadow-lg">
-                      <time className="text-xs font-medium text-muted-foreground mb-3 block">
-                        {new Date(date).toLocaleDateString('en-US', {
-                          month: 'long',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </time>
-                      <h3 className="text-lg font-semibold leading-snug group-hover:text-foreground/80 transition-colors mb-2">
-                        {title}
-                      </h3>
-                      <div className="flex items-center text-sm font-medium text-muted-foreground mt-4 group-hover:text-foreground transition-colors">
-                        Read Article <ArrowLeft className="w-4 h-4 ml-2 rotate-180 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </article>
-                  </Link>
-                ))}
-              </div>
+              <span className="w-1 h-1 rounded-full bg-border" />
+              <time dateTime={postData.date}>
+                {new Date(postData.date).toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </time>
+              <span className="w-1 h-1 rounded-full bg-border" />
+              <span>{readTime}</span>
             </div>
-          </section>
-        )}
+          </header>
+
+          {/* Inline Table of Contents */}
+          {postData.headings && postData.headings.length > 0 && (
+            <div className="bg-muted/30 rounded-2xl p-8 mb-16 border border-border">
+              <p className="font-bold text-sm uppercase tracking-wider text-muted-foreground mb-4">In this article</p>
+              <ul className="grid gap-2">
+                {postData.headings.map((heading) => (
+                  <li 
+                    key={heading.slug}
+                    style={{ paddingLeft: (heading.level - 2) * 16 }}
+                  >
+                    <a 
+                      href={`#${heading.slug}`}
+                      className="text-foreground/80 hover:text-primary hover:underline decoration-primary/30 underline-offset-4 transition-all text-sm font-medium"
+                    >
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Article Content */}
+          <article 
+            className="prose prose-zinc prose-lg max-w-none
+              prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-foreground
+              prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:scroll-mt-24
+              prose-h3:text-2xl prose-h3:mt-12 prose-h3:mb-4 prose-h3:scroll-mt-24
+              prose-p:text-muted-foreground prose-p:leading-8 prose-p:mb-6
+              prose-a:text-primary prose-a:font-medium prose-a:no-underline prose-a:border-b prose-a:border-primary/20 hover:prose-a:border-primary transition-all
+              prose-strong:text-foreground prose-strong:font-semibold
+              prose-ul:my-8 prose-ul:list-disc prose-ul:pl-6
+              prose-li:text-muted-foreground prose-li:mb-2
+              prose-code:text-foreground prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+              prose-pre:bg-zinc-900 prose-pre:text-zinc-50 prose-pre:p-6 prose-pre:rounded-xl prose-pre:shadow-lg
+              prose-blockquote:not-italic prose-blockquote:font-normal prose-blockquote:text-foreground prose-blockquote:bg-blue-50 prose-blockquote:p-8 prose-blockquote:rounded-xl prose-blockquote:border-l-4 prose-blockquote:border-blue-500
+              prose-img:rounded-xl prose-img:shadow-lg prose-img:border prose-img:border-border
+              prose-hr:border-border prose-hr:my-16
+              
+              /* Table Styling */
+              prose-table:w-full prose-table:my-12 prose-table:border-collapse prose-table:text-sm prose-table:shadow-sm prose-table:rounded-lg prose-table:overflow-hidden prose-table:border prose-table:border-border
+              prose-thead:bg-muted/50 prose-thead:border-b prose-thead:border-border
+              prose-th:p-4 prose-th:text-left prose-th:font-semibold prose-th:text-foreground prose-th:uppercase prose-th:tracking-wider prose-th:text-xs
+              prose-td:p-4 prose-td:border-b prose-td:border-border/50 prose-td:text-muted-foreground prose-td:bg-background
+              prose-tr:last:prose-td:border-b-0
+              prose-tr:hover:prose-td:bg-muted/20 transition-colors"
+            dangerouslySetInnerHTML={{ __html: postData.contentHtml || '' }} 
+          />
+          
+          {/* Footer CTA */}
+          <div className="mt-20 p-10 bg-zinc-900 text-white rounded-3xl text-center shadow-xl">
+            <h3 className="text-3xl font-bold mb-4">Transcribe smarter, not harder.</h3>
+            <p className="text-zinc-400 mb-8 max-w-md mx-auto text-lg">
+              Unlimited free transcription. Private. Secure. 
+              No credit card required.
+            </p>
+            <Link 
+              href="/"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black rounded-xl font-bold hover:bg-zinc-200 transition-colors"
+            >
+              <Sparkles className="w-5 h-5" />
+              Start Transcribing
+            </Link>
+          </div>
+        </main>
       </div>
     </>
   );
